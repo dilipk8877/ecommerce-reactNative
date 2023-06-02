@@ -1,0 +1,1 @@
+export const displayImageUrl=  "https://ecombackend.softprodigyphp.in/uploads/"
