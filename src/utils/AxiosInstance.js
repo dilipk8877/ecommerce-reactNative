@@ -30,3 +30,12 @@ export  const authHeader = async()=>{
         "Content-type": "application/json",
       }}
 }
+
+export const getTokenAccess = async () => {
+    try {
+      const token = await AsyncStorage.getItem('token');
+      return token;
+    } catch (error) {
+      console.log('Error retrieving token:', error);
+    }
+  };

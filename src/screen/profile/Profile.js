@@ -7,7 +7,8 @@ import FontAwesome5 from 'react-native-vector-icons/FontAwesome5';
 import AntDesign from 'react-native-vector-icons/AntDesign';
 import {useNavigation} from '@react-navigation/native';
 import {useDispatch, useSelector} from 'react-redux';
-import { setIslogout } from '../../features/loginSlice/LoginSlice';
+import { logOutUser, setIslogout } from '../../features/loginSlice/LoginSlice';
+import Header from '../../utils/Header';
 
 const Profile = ({navigation}) => {
   const navigate = useNavigation();
@@ -30,6 +31,7 @@ const Profile = ({navigation}) => {
   const handleLogout = async () => {
     await AsyncStorage.clear();
     dispatch(setIslogout())
+    dispatch(logOutUser())
     navigation.navigate('CategoryListing');
     ToastAndroid.showWithGravity(
       'Logout successfully',
@@ -37,24 +39,13 @@ const Profile = ({navigation}) => {
       ToastAndroid.CENTER,
     );
   };
-
   const handleWishlist = () => {
     navigate.navigate('Wishlist');
   };
 
   return (
     <View style={styles.container}>
-      <View style={styles.headerContainer}>
-        <AntDesign
-          onPress={() => navigation.openDrawer()}
-          name="menuunfold"
-          size={30}
-          color={'white'}
-        />
-        <View>
-          <Text style={styles.headerText}>Profile</Text>
-        </View>
-      </View>
+        <Header headerPageText="My Profile" />
       {isLogin  ? (
         <View style={styles.profileSection}>
           <Text style={styles.userName}>Hey! {user}</Text>
@@ -70,7 +61,7 @@ const Profile = ({navigation}) => {
               style={styles.contentContainer}
               onPress={() => navigation.navigate('Orders')}>
               <Text style={styles.contentText}>My Orders</Text>
-              <Feather name="grid" size={20} />
+              <Feather name="grid" size={20} color={"black"}/>
             </Pressable>
             <Pressable style={styles.contentContainer} onPress={handleWishlist}>
               <Text style={styles.contentText}>My Wishlist</Text>
@@ -78,7 +69,7 @@ const Profile = ({navigation}) => {
             </Pressable>
             <Pressable style={styles.contentContainer} onPress={()=>navigation.navigate("ShippingAddress")}>
               <Text style={styles.contentText}>Shipping Address</Text>
-              <FontAwesome5 name="shipping-fast" size={20} />
+              <FontAwesome5 name="shipping-fast" size={20} color={"black"} />
             </Pressable>
           </View>
           <View style={styles.logoutContainer}>
@@ -112,30 +103,13 @@ export default Profile;
 
 const styles = StyleSheet.create({
   container: {
-    flex: 1,
-    backgroundColor: '#dfe4ea',
-    alignItems: 'center',
-    justifyContent: 'center',
-  },
-  headerContainer: {
-    height: 50,
     width: '100%',
-    position: 'absolute',
-    top: 0,
-    backgroundColor: '#ff6600',
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    alignItems: 'center',
-    padding: 10,
-  },
-  headerText: {
-    fontSize: 20,
-    color: '#fff',
-    marginRight: 165,
+    height: '100%',
+    backgroundColor: '#dfe4ea',
   },
   profileSection: {
     backgroundColor: '#fff',
-    width: '90%',
+    width: '100%',
     height: '80%',
     borderRadius: 10,
     marginTop: 30,
@@ -144,6 +118,7 @@ const styles = StyleSheet.create({
   userName: {
     fontSize: 20,
     fontWeight: 500,
+    color: '#000',
   },
   logoutContainer: {
     padding: 30,
@@ -168,6 +143,7 @@ const styles = StyleSheet.create({
   },
   contentText: {
     fontSize: 18,
+    color:"grey",
     fontWeight: 500,
   },
   contentContainer: {
@@ -198,6 +174,7 @@ const styles = StyleSheet.create({
     fontWeight: 500,
   },
   loginText: {
-    fontSize: 18,
+    fontSize: 16,
+    color:"#000"
   },
 });

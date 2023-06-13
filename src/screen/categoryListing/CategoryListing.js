@@ -14,6 +14,7 @@ import {getCategory} from '../../features/categoryListing/CategoryListingSlice';
 
 import {FlashList} from '@shopify/flash-list';
 import {getProduct} from '../../features/productListing/ProductListingSlice';
+import Header from '../../utils/Header';
 
 const CategoryListing = ({navigation}) => {
   const {category, isLoader} = useSelector(state => state.userCategory);
@@ -36,19 +37,7 @@ const CategoryListing = ({navigation}) => {
         </View>
       ) : (
         <View style={styles.container}>
-          <View style={styles.headerContainer}>
-            <View>
-              <AntDesign
-                onPress={() => navigation.openDrawer()}
-                name="menuunfold"
-                size={30}
-                color={'white'}
-              />
-            </View>
-            <View>
-              <Text style={styles.headerText}>Category Page</Text>
-            </View>
-          </View>
+         <Header headerPageText="Category Page"/>
           <View style={styles.cardContainer}>
             <FlashList
               // horizontal={true}
@@ -63,7 +52,9 @@ const CategoryListing = ({navigation}) => {
                       handleProductPage(item?.item._id);
                     }}>
                     <Image
-                      source={{uri:`https://source.unsplash.com/450x300/?${item.item.name}`}}
+                      source={{
+                        uri: `https://source.unsplash.com/450x300/?${item.item.name}`,
+                      }}
                       style={styles.categoryImage}
                     />
                     <View style={styles.productContainer}>
@@ -91,23 +82,10 @@ const styles = StyleSheet.create({
     backgroundColor: '#dfe4ea',
   },
 
-  headerContainer: {
-    height: 50,
-    backgroundColor: '#ff6600',
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    alignItems: 'center',
-    padding: 10,
-  },
   horizontal: {
     flexDirection: 'row',
     justifyContent: 'space-around',
     padding: 10,
-  },
-  headerText: {
-    fontSize: 20,
-    color: '#fff',
-    marginRight: 140,
   },
   cartValue: {
     position: 'absolute',

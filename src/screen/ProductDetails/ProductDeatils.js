@@ -20,6 +20,7 @@ import {displayImageUrl} from '../../utils/ImageUrl';
 import jwtDecode from 'jwt-decode';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import {addWishlist} from '../../features/wishlist/WishlistSlice';
+import Header from '../../utils/Header';
 
 const ProductDeatils = ({navigation}) => {
   const {productDetals, isLoader, cartItem} = useSelector(
@@ -29,7 +30,7 @@ const ProductDeatils = ({navigation}) => {
   const {isLogin} = useSelector(state => state.login);
   const [userId, setUser] = useState();
   const [isProductAvailable, setIsProductAvailable] = useState(false);
-  const [quantity, setQuantity] = useState(0);
+  const [isWishlist, setIsWishlist] = useState(false);
   const dispatch = useDispatch();
 
   // useEffect(() => {
@@ -85,38 +86,20 @@ const ProductDeatils = ({navigation}) => {
     }
   };
 
-  const handleBuyNow = () => {
+  const handleGoToCart = () => {
+    navigation.navigate('CartPage');
+  };
+
+  const handleWishlist = () => {
     if (!isLogin) {
       navigation.navigate('LoginPage', {
         type: 'detailsPage',
         id: productDetals?._id,
       });
     } else {
-      dispatch(
-        addToCart({
-          user: userId,
-          seller: null,
-          quantity: 1,
-          product: productDetals,
-        }),
-      )
-        .unwrap()
-        .then(
-          () => dispatch(getCartItem(userId)),
-          setTimeout(()=>{
-            navigation.navigate('OrderSummary')
-          },500)
-        );
+      dispatch(addWishlist(productDetals._id));
     }
   };
-  const handleGoToCart = () => {
-    navigation.navigate('CartPage');
-  };
-
-  const handleWishlist = () => {
-    dispatch(addWishlist({productId: productDetals._id, userId}));
-  };
-
   return (
     <>
       {isLoader ? (
@@ -125,17 +108,7 @@ const ProductDeatils = ({navigation}) => {
         </View>
       ) : (
         <View style={styles.container}>
-          <View style={styles.headerContainer}>
-            <AntDesign
-              onPress={() => navigation.openDrawer()}
-              name="menuunfold"
-              size={30}
-              color={'white'}
-            />
-            <View>
-              <Text style={styles.headerText}>Product Details</Text>
-            </View>
-          </View>
+          <Header headerPageText="Product Details" />
           <View style={styles.wishlistConatiner}>
             {isWishListLoader ? (
               <View>
@@ -144,7 +117,7 @@ const ProductDeatils = ({navigation}) => {
             ) : (
               <FontAwesome
                 name="heart"
-                size={40}
+                size={30}
                 style={{color: productDetals?.isWishlist ? 'red' : '#EDEAE9'}}
                 onPress={() => handleWishlist()}
               />
@@ -200,9 +173,39 @@ const ProductDeatils = ({navigation}) => {
                 <Text style={styles.buttonAddToCartText}>Add to cart</Text>
               </Pressable>
             )}
-            <Pressable style={styles.buttonBuy} onPress={() => handleBuyNow()}>
-              <Text style={styles.buttonBuyNow}>Buy Now</Text>
-            </Pressable>
+            {productDetals?.isWishlist ? (
+              <Pressable
+                style={styles.buttonBuy}
+                onPress={() => handleWishlist()}>
+                <Text style={styles.buttonBuyNow}>
+                  Remove{' '}
+                  <FontAwesome
+                    name="heart"
+                    size={20}
+                    style={{
+                      color: 'red',
+                    }}
+                    // onPress={() => handleWishlist()}
+                  />
+                </Text>
+              </Pressable>
+            ) : (
+              <Pressable
+                style={styles.buttonBuy}
+                onPress={() => handleWishlist()}>
+                <Text style={styles.buttonBuyNow}>
+                  Wishlist{' '}
+                  <FontAwesome
+                    name="heart"
+                    size={20}
+                    style={{
+                      color: '#EDEAE9',
+                    }}
+                    // onPress={() => handleWishlist()}
+                  />
+                </Text>
+              </Pressable>
+            )}
           </View>
         </View>
       )}
@@ -259,11 +262,7 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     alignItems: 'center',
   },
-  headerText: {
-    fontSize: 20,
-    color: '#fff',
-    marginRight: 145,
-  },
+
   iconContainer: {
     backgroundColor: '#fff',
     borderRadius: 5,
@@ -278,14 +277,6 @@ const styles = StyleSheet.create({
     borderRadius: 10,
     marginLeft: 5,
     marginTop: 5,
-  },
-  headerContainer: {
-    height: 50,
-    backgroundColor: '#ff6600',
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    alignItems: 'center',
-    padding: 10,
   },
   cartValue: {
     position: 'absolute',

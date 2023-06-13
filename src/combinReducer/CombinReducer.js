@@ -5,6 +5,7 @@ import SignupSlice from "../features/signupSlice/SignupSlice"
 import LoginSlice from "../features/loginSlice/LoginSlice"
 import Wishlist from "../features/wishlist/WishlistSlice"
 import AddressSlice from "../features/address/AddressSlice"
+import CreateOrder from "../features/address/CreateOrderSlice"
 
 const rootReducer = combineReducers({
     userCategory:CategoryListingSlice,
@@ -12,8 +13,9 @@ const rootReducer = combineReducers({
     signup:SignupSlice,
     login:LoginSlice,
     address:AddressSlice,
-    wishlist:Wishlist
+    wishlist:Wishlist,
+    createOrder:CreateOrder,
 
 })
 
-export default rootReducer
+export default rootReducer     

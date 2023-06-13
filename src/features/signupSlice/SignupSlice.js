@@ -1,20 +1,20 @@
 import {createAsyncThunk, createSlice} from '@reduxjs/toolkit';
 import {axiosInstance} from '../../utils/AxiosInstance';
-import axios from 'axios';
 import AsyncStorage from '@react-native-async-storage/async-storage';
-import { useEffect } from 'react';
 import { ToastAndroid } from 'react-native';
+
+
 export const getSignup = createAsyncThunk(
   'signup/getSignup',
   async (data, thunkAPI) => {
     try {
       const res = await axiosInstance.post(
         '/users/register',
-        data
+        data.user
       );
-      if(res && res.data && res.data.token){
-        AsyncStorage.setItem('token', res.data.token);
-      }
+         
+      await AsyncStorage.setItem("token",res.data.token)
+      data.navigation.navigate("LoginPage")
       return res.data;
     } catch (e) {
       return thunkAPI.rejectWithValue(e);
@@ -27,6 +27,8 @@ const initialState = {
   status: null,
   isSignup: AsyncStorage.getItem('token') ? true : false,
 };
+
+
 const signupSlice = createSlice({
   name: 'signup',
   initialState,
@@ -37,6 +39,7 @@ const signupSlice = createSlice({
     }),
       builder.addCase(getSignup.fulfilled, (state, action) => {
         state.status = 'fulfilled';
+        AsyncStorage.setItem("token",res.data.token)
         state.isSignup = true;
         ToastAndroid.showWithGravity(
           action.payload.message,

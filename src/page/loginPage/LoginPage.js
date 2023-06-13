@@ -14,9 +14,16 @@ import Fontisto from 'react-native-vector-icons/Fontisto';
 import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons';
 import {useDispatch, useSelector} from 'react-redux';
 import {getLogin} from '../../features/loginSlice/LoginSlice';
-import {useFocusEffect, useRoute,DrawerActions, useNavigation} from '@react-navigation/native';
+import {
+  useFocusEffect,
+  useRoute,
+  DrawerActions,
+  useNavigation,
+} from '@react-navigation/native';
 import {getProductDetails} from '../../features/productListing/ProductListingSlice';
+import {useFormik} from 'formik';
 
+import * as Yup from 'yup';
 const LoginPage = ({navigation}) => {
   const route = useRoute();
   const [email, setEmail] = useState('');
@@ -36,6 +43,20 @@ const LoginPage = ({navigation}) => {
     dispatch(getLogin({email, password}));
   };
 
+  const {values, handleChange, handleSubmit, touched, errors} = useFormik({
+    initialValues: {
+      email: '',
+      password: '',
+    },
+    validationSchema: Yup.object({
+      email: Yup.string().email().required('Please enter your email'),
+      password: Yup.string().required('Please enter your password'),
+    }),
+    onSubmit: (data, action) => {
+      dispatch(getLogin({data, action}));
+    },
+  });
+
   useEffect(() => {
     if (status === 'fulfilled') {
       if (route.params && route.params.type === 'detailsPage') {
@@ -50,10 +71,10 @@ const LoginPage = ({navigation}) => {
       }
     }
   }, [isLoader]);
-const {setOptions} = useNavigation()
-    useEffect(() => {
-      setOptions({ tabBarHidden: true });
-    }, []);
+  const {setOptions} = useNavigation();
+  useEffect(() => {
+    setOptions({tabBarHidden: true});
+  }, []);
   return (
     <>
       {isLoader ? (
@@ -85,33 +106,47 @@ const {setOptions} = useNavigation()
               </Pressable>
             </View>
             <View style={styles.inputContainer}>
-              <Fontisto name="email" size={30} style={styles.emailIcon} />
-              <TextInput
-                style={styles.inputField}
-                placeholder="Email"
-                onChangeText={email => setEmail(email)}
-              />
-              <MaterialCommunityIcons
-                name="lock-open-check-outline"
-                size={30}
-                style={styles.passwordsIcon}
-              />
-              <TextInput
-                placeholder="Password"
-                style={styles.inputField}
-                secureTextEntry={true}
-                onChangeText={password => setPassword(password)}
-              />
+              <View style={{width: '100%', marginBottom: 10}}>
+                <Fontisto name="email" size={30} style={styles.emailIcon} />
+                <TextInput
+                  style={styles.inputField}
+                  placeholder="Email"
+                  placeholderTextColor="#000"
+                  value={values.email}
+                  onChangeText={handleChange('email')}
+                />
+                {touched.email && errors.email && (
+                  <Text style={{color: 'red'}}>{errors.email}</Text>
+                )}
+              </View>
+              <View style={{width: '100%', marginBottom: 10}}>
+                <MaterialCommunityIcons
+                  name="lock-open-check-outline"
+                  size={30}
+                  style={styles.passwordsIcon}
+                />
+                <TextInput
+                  placeholder="Password"
+                  placeholderTextColor="#000"
+                  style={styles.inputField}
+                  secureTextEntry={true}
+                  value={values.password}
+                  onChangeText={handleChange('password')}
+                />
+                {touched.password && errors.password && (
+                  <Text style={{color: 'red'}}>{errors.password}</Text>
+                )}
+              </View>
             </View>
-              <Pressable onPress={handleLogin}>
-            <LinearGradient
-              start={{x: 0, y: 0}}
-              end={{x: 1, y: 0}}
-              colors={['#efa248', '#f28346']}
-              style={styles.buttonGradient}>
+            <Pressable onPress={handleSubmit}>
+              <LinearGradient
+                start={{x: 0, y: 0}}
+                end={{x: 1, y: 0}}
+                colors={['#efa248', '#f28346']}
+                style={styles.buttonGradient}>
                 <Text style={styles.buttonText}>Login</Text>
-            </LinearGradient>
-              </Pressable>
+              </LinearGradient>
+            </Pressable>
           </View>
         </LinearGradient>
       )}
@@ -156,7 +191,7 @@ const styles = StyleSheet.create({
   },
   formContainer: {
     width: '80%',
-    height: 300,
+    height: 'auto',
     backgroundColor: '#fff',
     marginTop: 70,
     borderRadius: 20,
@@ -194,7 +229,7 @@ const styles = StyleSheet.create({
     borderColor: 'grey',
     borderWidth: 1,
     borderRadius: 50,
-    marginBottom: 10,
+    // marginBottom: 10,
     paddingLeft: 45,
     fontSize: 15,
     color: 'black',
@@ -202,14 +237,14 @@ const styles = StyleSheet.create({
   emailIcon: {
     color: 'grey',
     position: 'absolute',
-    top: 30,
-    left: 30,
+    top: 10,
+    left: 10,
   },
   passwordsIcon: {
     color: 'grey',
     position: 'absolute',
-    top: 90,
-    left: 30,
+    top: 10,
+    left: 10,
   },
   buttonGradient: {
     width: 150,

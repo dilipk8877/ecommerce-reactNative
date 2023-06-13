@@ -8,7 +8,7 @@ import {
   Text,
   TouchableOpacity,
   View,
-} from 'react-native';
+} from 'react-native';     
 import AntDesign from 'react-native-vector-icons/AntDesign';
 import {emptyCart, getCartItem} from '../../features/productListing/ProductListingSlice';
 import AsyncStorage from '@react-native-async-storage/async-storage';
@@ -19,10 +19,13 @@ import {displayImageUrl} from '../../utils/ImageUrl';
 import StarRating from 'react-native-star-rating';
 import FontAwesome from 'react-native-vector-icons/FontAwesome';
 import RazorpayCheckout from 'react-native-razorpay';
+import { updateOrder } from '../../features/address/CreateOrderSlice';
+import Header from '../../utils/Header';
 const OrderSummary = ({navigation}) => {
   const dispatch = useDispatch();
-  const [totalPrice, setTotalPrice] = useState(0);
-  const {isLoader, cartItem} = useSelector(state => state.userProduct);
+  // const [totalPrice, setTotalPrice] = useState(0);
+  const {totalPrice, cartItem} = useSelector(state => state.userProduct);
+  const {deliveredAddress,orderId,loading} = useSelector((state) => state.createOrder)
   const [user, setUser] = useState();
   const getToken = async () => {
     const token = await AsyncStorage.getItem('token');
@@ -32,47 +35,46 @@ const OrderSummary = ({navigation}) => {
     }
   };
 
+
+
   useEffect(() => {
     getToken();
   }, []);
+
+
 
   useEffect(() => {
     dispatch(getCartItem(user?.id));
   }, [user]);
 
-  const calculateTotalPrice = () => {
-    let price = 0;
-    cartItem?.forEach(item => {
-      price += item.product.price * item.product.quantity;
-    });
-    setTotalPrice(price);
-  };
-
-  useEffect(() => {
-    calculateTotalPrice();
-  }, [cartItem]);
 
   const handlePlaceOrder = () => {
     var options = {
       description: 'Credits towards consultation',
       currency: 'INR',
-      key: 'rzp_test_VrEN7BbriCExpP',
+      key: 'rzp_test_Tiv5oHxAC3kTlH',
       amount: totalPrice * 100,
       name: 'Payments',
-      order_id: '', //Replace this with an order_id created using Orders API.
+      order_id: orderId.razorpayOrderId.id,
       prefill: {
-        contact: '9191919191',
-        name: user?.name,
-        email:user?.email
+        contact: deliveredAddress?.phone,
+        name: deliveredAddress?.fullName,
       },
       theme: {color: '#ff6600'},
     };
     RazorpayCheckout.open(options)
       .then(data => {
-        // handle success
-        alert(`Success: ${data.razorpay_payment_id}`);
+        dispatch(updateOrder( {
+          userId: user?.id,
+          address:deliveredAddress,
+          totalAmount: totalPrice,
+          status: 'pending',
+          paymentId: data?.razorpay_payment_id,
+          testMode: true
+        }))
         dispatch(emptyCart(user?.id));
         navigation.navigate("CategoryListing")
+        alert("Payment Successful");
       })
       .catch(error => {
         // handle failure
@@ -82,23 +84,13 @@ const OrderSummary = ({navigation}) => {
 
   return (
     <>
-      {false ? (
+      {loading ? (
         <View style={[styles.container, styles.horizontal]}>
           <ActivityIndicator size="large" color="#ff6600" />
         </View>
       ) : (
         <>
-          <View style={styles.headerContainer}>
-            <AntDesign
-              onPress={() => navigation.openDrawer()}
-              name="menuunfold"
-              size={30}
-              color={'white'}
-            />
-            <View>
-              <Text style={styles.headerText}>Order Summary</Text>
-            </View>
-          </View>
+        <Header headerPageText="Order Summary" />
           <ScrollView>
             <View style={styles.shippingDetails}>
               <View style={styles.shippingHeader}>
@@ -106,15 +98,16 @@ const OrderSummary = ({navigation}) => {
                   <Text style={styles.shippingHeaderText}>Deliver to: </Text>
                 </View>
                 <View>
-                  <Pressable style={styles.shippingButton}>
+                  <Pressable style={styles.shippingButton} onPress={()=>navigation.navigate("SelectAddress")}>
                     <Text style={styles.shippingButtonText}>Change</Text>
                   </Pressable>
                 </View>
               </View>
               <View style={styles.shippingWrap}>
-                <Text style={styles.userName}>Naam</Text>
-                <Text style={styles.addresss}>sdfsjbgvbfdjgdfgghfg</Text>
-                <Text style={styles.phoneNumber}>65210246858</Text>
+                <Text style={styles.userName}>{deliveredAddress?.fullName}</Text>
+                <Text style={styles.addresss}>{deliveredAddress?.addressLine1}, {deliveredAddress?.addressLine2},</Text>
+                <Text style={styles.phoneNumber}>{deliveredAddress?.postalCode}</Text>
+                <Text style={styles.phoneNumber}>{deliveredAddress?.phone}</Text>
               </View>
             </View>
             <View style={{width:"100%",height:"100%"}}>
@@ -162,7 +155,7 @@ const OrderSummary = ({navigation}) => {
             />
             </View>
           </ScrollView>
-          <View style={styles.bottomConatiner}>
+          {orderId &&  <View style={styles.bottomConatiner}>
             <View style={styles.cartBottom}>
               <Text style={styles.cartPrice}>
                 {' '}
@@ -175,7 +168,8 @@ const OrderSummary = ({navigation}) => {
                 <Text style={styles.CartPagePlace}>Continue</Text>
               </Pressable>
             </View>
-          </View>
+          </View>}
+         
         </>
       )}
     </>
@@ -194,19 +188,7 @@ const styles = StyleSheet.create({
     justifyContent: 'space-around',
     padding: 10,
   },
-  headerContainer: {
-    height: 50,
-    backgroundColor: '#ff6600',
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    alignItems: 'center',
-    padding: 10,
-  },
-  headerText: {
-    fontSize: 20,
-    color: '#fff',
-    marginRight: 130,
-  },
+
   shippingDetails: {
     backgroundColor: '#fff',
     height: 'auto',

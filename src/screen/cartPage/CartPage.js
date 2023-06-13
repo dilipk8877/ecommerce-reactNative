@@ -17,16 +17,20 @@ import {
   emptyCart,
   getCartItem,
   getProductDetails,
+  incrementItemInCart,
   removeSingleProduct,
+  setTotalPrices,
 } from '../../features/productListing/ProductListingSlice';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import {FlashList} from '@shopify/flash-list';
 import UserNotLogin from './UserNotLogin';
 import {displayImageUrl} from '../../utils/ImageUrl';
 import FontAwesome from 'react-native-vector-icons/FontAwesome';
+import Header from '../../utils/Header';
 
 const CartPage = ({navigation}) => {
   const {isLoader, cartItem} = useSelector(state => state.userProduct);
+  const {isLogin} = useSelector(state => state.login);
   const [totalPrice, setTotalPrice] = useState(0);
   const dispatch = useDispatch();
   const [userId, setUser] = useState();
@@ -37,16 +41,15 @@ const CartPage = ({navigation}) => {
       setUser(decodedToken?.id);
     }
   };
+  useEffect(() => {
+    getToken();
+  }, []);
 
-  const {isLogin, user} = useSelector(state => state.login);
 
   useEffect(() => {
     dispatch(getCartItem(userId));
   }, [userId]);
 
-  useEffect(() => {
-    getToken();
-  }, []);
 
   useEffect(() => {
     calculateTotalPrice();
@@ -74,9 +77,22 @@ const CartPage = ({navigation}) => {
   };
 
   const handlePlaceOrder = () => {
-    navigation.navigate('OrderSummary');
+    dispatch(setTotalPrices(totalPrice))
+    navigation.navigate('SelectAddress');
+
   };
 
+  const handleIncrementItem = data => {
+    dispatch(
+      incrementItemInCart({id:data.id, quantity:data.quantity +1,userId}),
+    );
+  };
+
+  const handleDecrementItem = data => {
+    dispatch(
+      incrementItemInCart({id:data.id, quantity:data.quantity -1,userId}),
+    );
+  };
   return (
     <>
       {isLoader ? (
@@ -85,19 +101,8 @@ const CartPage = ({navigation}) => {
         </View>
       ) : (
         <View style={styles.container}>
-          <View style={styles.headerContainer}>
-            <AntDesign
-              onPress={() => navigation.openDrawer()}
-              name="menuunfold"
-              size={30}
-              color={'white'}
-            />
-            <View>
-              <Text style={styles.headerText}>Your Cart</Text>
-            </View>
-          </View>
-
-          {isLogin  ? (
+        <Header headerPageText="Your Cart" />
+          {isLogin ? (
             <>
               {cartItem?.length > 0 ? (
                 <View style={styles.emptyButtonContainer}>
@@ -116,7 +121,8 @@ const CartPage = ({navigation}) => {
                     return (
                       <TouchableOpacity
                         style={styles.cartProductList}
-                        onPress={() => handleOpenProductDetail(item.item.id)}>
+                        // onPress={() => handleOpenProductDetail(item.item.id)}
+                      >
                         <View>
                           <Image
                             source={{
@@ -139,7 +145,16 @@ const CartPage = ({navigation}) => {
                           </Text>
                           <View style={styles.counterContainer}>
                             <Pressable style={styles.IncDecIcon}>
-                              <Text style={styles.IncDecIconText}>-</Text>
+                              <Text
+                                style={styles.IncDecIconText}
+                                onPress={() =>
+                                  handleDecrementItem({
+                                    id: item.item.id,
+                                    quantity: item.item.quantity,
+                                  })
+                                }>
+                                -
+                              </Text>
                             </Pressable>
                             <View style={styles.cartInput}>
                               <Text style={{fontSize: 18, color: 'black'}}>
@@ -147,7 +162,16 @@ const CartPage = ({navigation}) => {
                               </Text>
                             </View>
                             <Pressable style={styles.IncDecIcon}>
-                              <Text style={styles.IncDecIconText}>+</Text>
+                              <Text
+                                style={styles.IncDecIconText}
+                                onPress={() =>
+                                  handleIncrementItem({
+                                    id: item.item.id,
+                                    quantity: item.item.quantity,
+                                  })
+                                }>
+                                +
+                              </Text>
                             </Pressable>
                           </View>
                         </View>
@@ -162,10 +186,6 @@ const CartPage = ({navigation}) => {
                     style={styles.CartImage}
                   />
                   <Text style={styles.emptyCartText}>Your Cart is Empty</Text>
-                  <Text style={styles.emptyCartdesc}>
-                    Looks like you have not added anything to your cart. Go
-                    ahead & explore top categories
-                  </Text>
                   <Text
                     style={styles.emptyCartLink}
                     onPress={() => navigation.navigate('CategoryListing')}>
@@ -210,15 +230,7 @@ const styles = StyleSheet.create({
     fontSize: 25,
     color: 'black',
   },
-  headerText: {
-    fontSize: 20,
-    color: '#fff',
-    marginRight: 150,
-  },
-  emptyCartdesc: {
-    width: '80%',
-    fontSize: 15,
-  },
+
   emptyCartLink: {
     color: '#4285F4',
     fontSize: 18,
@@ -246,14 +258,7 @@ const styles = StyleSheet.create({
   productDetails: {
     marginLeft: 10,
   },
-  headerContainer: {
-    height: 50,
-    backgroundColor: '#ff6600',
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    alignItems: 'center',
-    padding: 10,
-  },
+
   cartBottom: {
     flexDirection: 'row',
     justifyContent: 'space-between',

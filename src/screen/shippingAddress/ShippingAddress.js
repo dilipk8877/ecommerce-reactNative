@@ -13,6 +13,7 @@ import {useDispatch, useSelector} from 'react-redux';
 import {getCategory} from '../../features/categoryListing/CategoryListingSlice';
 import {deleteAddress, getAllAddress, setEditValue} from '../../features/address/AddressSlice';
 import Entypo from 'react-native-vector-icons/Entypo';
+import Header from '../../utils/Header';
 const ShippingAddress = ({navigation}) => {
   const {address, isLoader} = useSelector(state => state.address);
   const dispatch = useDispatch();
@@ -47,19 +48,7 @@ const handleSaveNewAddress = () =>{
         </View>
       ) : (
         <View style={styles.container}>
-          <View style={styles.headerContainer}>
-            <View>
-              <AntDesign
-                onPress={() => navigation.openDrawer()}
-                name="menuunfold"
-                size={30}
-                color={'white'}
-              />
-            </View>
-            <View>
-              <Text style={styles.headerText}>Shipping Address</Text>
-            </View>
-          </View>
+        <Header headerPageText="Shipping Address" />
           <View style={styles.newAddressContainer}>
             <Text
               style={styles.newAddressText}
@@ -144,20 +133,9 @@ const styles = StyleSheet.create({
     fontWeight: 500,
     marginTop: 20,
     padding: 20,
+    color: '#000',
   },
-  headerContainer: {
-    height: 50,
-    backgroundColor: '#ff6600',
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    alignItems: 'center',
-    padding: 10,
-  },
-  headerText: {
-    fontSize: 20,
-    color: '#fff',
-    marginRight: 120,
-  },
+
 
   card: {
     width: '100%',
@@ -169,14 +147,14 @@ const styles = StyleSheet.create({
     justifyContent: 'space-between',
   },
   cardText: {
-    fontSize: 18,
+    fontSize: 16,
     color: '#000',
     fontWeight: 400,
   },
   modal: {
     zIndex: 1,
     width: 80,
-    height: 80,
+    height: 85,
     // backgroundColor: '#E9EDED',
     position: 'absolute',
     top: 10,
@@ -187,5 +165,6 @@ const styles = StyleSheet.create({
     color: '#000',
     fontWeight: 500,
     padding: 5,
+    fontSize: 12,
   },
 });

@@ -2,39 +2,46 @@ import {FlashList} from '@shopify/flash-list';
 import React, {useEffect} from 'react';
 import {Image, StyleSheet, Text, TouchableOpacity, View} from 'react-native';
 import {useDispatch, useSelector} from 'react-redux';
-import {getCategory} from '../../features/categoryListing/CategoryListingSlice';
 import StarRating from 'react-native-star-rating';
 import AntDesign from 'react-native-vector-icons/AntDesign';
+import { getOrder } from '../../features/address/CreateOrderSlice';
+import { ActivityIndicator } from 'react-native';
+import { useState } from 'react';
+import AsyncStorage from '@react-native-async-storage/async-storage';
+import jwtDecode from 'jwt-decode';
+import Header from '../../utils/Header';
 const OrderSection = ({navigation}) => {
-  const {category, isLoader} = useSelector(state => state.userCategory);
+  const {orderList, loading} = useSelector(state => state.createOrder);
   const {isLogin} = useSelector(state => state.login);
   const dispatch = useDispatch();
+  const [userId, setUser] = useState();
+  const getToken = async () => {
+    const token = await AsyncStorage.getItem('token');
+    if (token) {
+      const decodedToken = jwtDecode(token);
+      setUser(decodedToken?.id);
+    }      
+  };
   useEffect(() => {
-    dispatch(getCategory());
+    getToken();
   }, []);
+
+  useEffect(() => {
+    dispatch(getOrder(userId));
+  }, [userId]);
+  console.log(orderList)
   return (
-    <View style={styles.container}>
-      <View style={styles.headerContainer}>
-        <AntDesign
-          onPress={() => navigation.openDrawer()}
-          name="menuunfold"
-          size={30}
-          color={'white'}
-        />
-        <View>
-          <Text style={styles.headerText}>My Orders</Text>
+    <>
+     {loading ? (
+        <View style={[styles.container, styles.horizontal]}>
+          <ActivityIndicator size="large" color="#ff6600" />
         </View>
-      </View>
-      {/* <View
-        style={{
-          borderBottomColor: 'black',
-          borderBottomWidth: StyleSheet.hairlineWidth,
-        }}
-      /> */}
-      {false ? (
+      ) : (  <View style={styles.container}>
+        <Header headerPageText="My Orders" />
+      {isLogin ? (
         <View style={styles.cardContainer}>
           <FlashList
-            data={category}
+            data={orderList}
             estimatedItemSize={200}
             renderItem={item => {
               return (
@@ -70,7 +77,9 @@ const OrderSection = ({navigation}) => {
           <Text style={styles.emptyText}>No order!</Text>
         </View>
       )}
-    </View>
+    </View>)}
+  
+    </>
   );
 };
 
@@ -82,22 +91,13 @@ const styles = StyleSheet.create({
     height: '100%',
     backgroundColor: '#dfe4ea',
   },
-  headerContainer: {
-    height: 50,
-    width: '100%',
-    position: 'absolute',
-    top: 0,
-    backgroundColor: '#ff6600',
+  horizontal: {
     flexDirection: 'row',
-    justifyContent: 'space-between',
-    alignItems: 'center',
+    justifyContent: 'space-around',
     padding: 10,
   },
-  headerText: {
-    fontSize: 20,
-    color: '#fff',
-    marginRight: 165,
-  },
+
+
   emptyContainer:{
     justifyContent: 'center',
     alignItems:"center",
@@ -105,7 +105,9 @@ const styles = StyleSheet.create({
     height:"100%",
   },
   emptyText:{
-    fontSize:22
+    fontSize:22,
+    color:"#000"
+
   },
   orderImage: {
     width: 100,
@@ -121,8 +123,6 @@ const styles = StyleSheet.create({
   },
   cardContainer: {
     flexDirection: 'column',
-    // flexWrap: 'wrap',
-    marginTop: 50,
     width: '100%',
     height: '100%',
   },

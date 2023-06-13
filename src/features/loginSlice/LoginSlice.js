@@ -7,10 +7,10 @@ export const getLogin = createAsyncThunk(
   'login/getLogin',
   async (data, thunkAPI) => {
     try {
-      const res = await axiosInstance.post('/users/login', data);
-      
+      const res = await axiosInstance.post('/users/login', data.data);
      await AsyncStorage.setItem('token', res.data.token);
       thunkAPI.dispatch(setIslogin())
+      data.actiom.resetForm()
       return res.dara;
     } catch (error) {
       return thunkAPI.rejectWithValue(error);
@@ -18,11 +18,14 @@ export const getLogin = createAsyncThunk(
   },
 );
 
+// const userToekn = AsyncStorage.getItem("token") ? AsyncStorage.getItem("token") : null; 
+
 const initialState = {
   status: null,
-  isLogin:false,
+  isLogin: AsyncStorage.getItem('token') ? true : false,
   isLoader:false,
   user:null,
+  userToken:null,
 };
 
 const loginSlice = createSlice({
@@ -52,6 +55,7 @@ const loginSlice = createSlice({
         state.status = 'fulfilled';
         state.isLoader = false;
         state.isLogin=true
+        state.userToken=action.payload.token
         ToastAndroid.showWithGravity(
           action.payload?.message,
           ToastAndroid.SHORT,

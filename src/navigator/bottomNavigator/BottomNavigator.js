@@ -43,7 +43,8 @@ const BottomNavigator = ({navigation}) => {
             return (
               <Feather
                 name="list"
-                size={25}
+                size={20}
+                color={'black'}
                 onPress={() => navigation.navigate('CategoryListing')}
               />
             );
@@ -56,7 +57,7 @@ const BottomNavigator = ({navigation}) => {
         options={{
           headerShown: false,
           tabBarIcon: () => {
-            return <Feather name="grid" size={25} />;
+            return <Feather name="grid" size={20} color={'black'} />;
           },
         }}
       />
@@ -66,7 +67,7 @@ const BottomNavigator = ({navigation}) => {
         options={{
           headerShown: false,
           tabBarIcon: () => {
-            return <Feather name="user" size={25} />;
+            return <Feather name="user" size={20} color={'black'} />;
           },
         }}
       />
@@ -78,7 +79,7 @@ const BottomNavigator = ({navigation}) => {
           tabBarIcon: () => {
             return (
               <>
-                <Feather name="shopping-cart" size={25} />
+                <Feather name="shopping-cart" size={20} color={'black'} />
                 <View style={styles.cartValue}>
                   {isLogin ? (
                     <Text style={styles.cartItemValue}>

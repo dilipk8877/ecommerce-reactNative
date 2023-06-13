@@ -6,6 +6,7 @@ import LoginPage from '../page/loginPage/LoginPage';
 import SignupPage from '../page/signupPage/SignupPage';
 import BottomNavigator from './bottomNavigator/BottomNavigator';
 import {useSelector} from 'react-redux';
+import Parent from './Parent/Parent';
 const Stack = createNativeStackNavigator();
 const MainStack = () => {
   const [userId, setUser] = useState();

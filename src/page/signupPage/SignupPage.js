@@ -14,31 +14,35 @@ import Fontisto from 'react-native-vector-icons/Fontisto';
 import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons';
 import {useDispatch, useSelector} from 'react-redux';
 import {getSignup} from '../../features/signupSlice/SignupSlice';
-
-import validator from '../../utils/Validator';
-import {showError} from '../../utils/helperFuntion';
 import {useFormik} from 'formik';
 
 import * as Yup from 'yup';
+import { getTokenAccess } from '../../utils/AxiosInstance';
 const SignupPage = ({navigation}) => {
-  const [name, setName] = useState('');
-  const [email, setEmail] = useState('');
-  const [password, setPassword] = useState('');
-  const [phone, setPhone] = useState('');
-  const [errortextUser, setErrortextUser] = useState(false);
-  const [errortextEmail, setErrortextEmail] = useState(false);
-  const [errortextPhone, setErrortextPhone] = useState(false);
-  const [errortextPassword, setErrortextPassword] = useState(false);
-  const {isSignup, isLoader} = useSelector(state => state.signup);
+  const {isLoader} = useSelector(state => state.signup);
   const dispatch = useDispatch();
+
+  const [token, setToken] = useState('');
+
+  useEffect(() => {
+    getTokenAccess().then((token) => {
+      if (token) {
+        setToken(token);
+      }
+    });
+  }, []);
+  useEffect(()=>{
+    if(token) {
+      navigation.navigate("CategoryListing")
+    }
+  },[token])
+
   const phoneRegExp =
     /^((\\+[1-9]{1,4}[ \\-]*)|(\\([0-9]{2,3}\\)[ \\-]*)|([0-9]{2,4})[ \\-]*)*?[0-9]{3,4}?[ \\-]*[0-9]{3,4}?$/;
   const {
     values,
-    handleBlur,
     handleChange,
     handleSubmit,
-    resetForm,
     touched,
     errors,
   } = useFormik({
@@ -56,47 +60,14 @@ const SignupPage = ({navigation}) => {
       phone: Yup.string()
         .required('Please enter phone number')
         .matches(phoneRegExp, 'Phone number is not valid'),
-      password: Yup.string().required('Please enter password').matches(
-        "^(?=.*[A-Za-z])(?=.*d)(?=.*[@$!%*#?&])[A-Za-zd@$!%*#?&]{8,}$",
-        "Must Contain 8 Characters, One Uppercase, One Lowercase, One Number and one special case Character"
-      ),
+      password: Yup.string().required('Please enter password'),
     }),
-    onSubmit: data => {
-      console.log(data);
-      // dispatch(getSignup(data))
+    onSubmit: (data,action) => {
+      dispatch(getSignup({user:data,navigation}))
     },
   });
 
-  const handleSignup = () => {
-    let signupError = {field: '', message: ''};
-    if (name === '') {
-      signupError.field = 'name';
-      signupError.message = 'Please enter Full Name';
-      setErrortextUser(signupError);
-    } else if (email === '') {
-      signupError.field = 'email';
-      signupError.message = 'Please enter Email';
-      setErrortextUser(signupError);
-    } else if (phone === '') {
-      signupError.field = 'phone';
-      signupError.message = 'Please Enter phone Number';
-      setErrortextUser(signupError);
-    } else if (password === '') {
-      signupError.field = 'password';
-      signupError.message = 'Please Enter Password';
-      setErrortextUser(signupError);
-    }
 
-    // if (name || email || password || phone) {
-    //   dispatch(getSignup({name, email, password, phone}));
-    // }
-  };
-
-  // useEffect(()=>{
-  //   if(isSignup){
-  //     navigation.navigate('MainStack');
-  //   }
-  // },[isSignup])
   return (
     <>
       {isLoader ? (
@@ -137,6 +108,7 @@ const SignupPage = ({navigation}) => {
                 <TextInput
                   style={styles.inputFieldUser}
                   placeholder="User Name"
+                  placeholderTextColor="#000"
                   value={values.name}
                   onChangeText={handleChange('name')}
                 />
@@ -149,6 +121,7 @@ const SignupPage = ({navigation}) => {
                 <TextInput
                   style={styles.inputFieldEmail}
                   placeholder="Email"
+                  placeholderTextColor="#000"
                   value={values.email}
                   onChangeText={handleChange('email')}
                 />
@@ -162,6 +135,7 @@ const SignupPage = ({navigation}) => {
                 <TextInput
                   style={styles.inputFieldPhone}
                   placeholder="Phone Number"
+                  placeholderTextColor="#000"
                   value={values.phone}
                   onChangeText={handleChange('phone')}
                 />
@@ -179,6 +153,7 @@ const SignupPage = ({navigation}) => {
                 <TextInput
                   style={styles.inputFieldPassword}
                   placeholder="Password"
+                  placeholderTextColor="#000"
                   secureTextEntry={true}
                   value={values.password}
                   onChangeText={handleChange('password')}

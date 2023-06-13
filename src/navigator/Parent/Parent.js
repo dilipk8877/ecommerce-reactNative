@@ -4,12 +4,11 @@ import CategoryListing from '../../screen/categoryListing/CategoryListing';
 import ProductListing from '../../screen/ProductListing/ProductListing';
 import ProductDeatils from '../../screen/ProductDetails/ProductDeatils';
 import Wishlist from '../../screen/wishlist/Wishlist';
-import LoginPage from '../../page/loginPage/LoginPage';
-import SignupPage from '../../page/signupPage/SignupPage';
 import CartPage from '../../screen/cartPage/CartPage';
 import ShippingAddress from '../../screen/shippingAddress/ShippingAddress';
 import AddAddress from '../../screen/shippingAddress/AddAddress';
 import OrderSummary from '../../screen/cartPage/OrderSummary';
+import SelectAddress from '../../screen/shippingAddress/SelectAddress';
 const Stack = createNativeStackNavigator();
 const Parent = () => {
   return (
@@ -54,6 +53,10 @@ const Parent = () => {
         component={OrderSummary}
         options={{headerShown: false}}
       />
+      <Stack.Screen 
+      name="SelectAddress"
+      component={SelectAddress}
+      options={{headerShown: false}}/>
     </Stack.Navigator>
   );
 };

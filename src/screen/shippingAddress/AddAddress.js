@@ -1,6 +1,5 @@
 import React, {useState} from 'react';
 import {
-  Button,
   Pressable,
   StyleSheet,
   Text,
@@ -12,6 +11,7 @@ import {
 import AntDesign from 'react-native-vector-icons/AntDesign';
 import {useDispatch, useSelector} from 'react-redux';
 import {addAddress, updateAddress} from '../../features/address/AddressSlice';
+import Header from '../../utils/Header';
 const AddAddress = ({navigation}) => {
   const dispatch = useDispatch();
   const {isLoader, preFieldValue} = useSelector(state => state.address);
@@ -37,9 +37,7 @@ const AddAddress = ({navigation}) => {
     dispatch(addAddress({address, navigation}));
   };
 
-
   const handleUpdateAddress = () => {
-
     dispatch(updateAddress({address, navigation, id: preFieldValue?._id}));
   };
   return (
@@ -50,71 +48,61 @@ const AddAddress = ({navigation}) => {
         </View>
       ) : (
         <View style={styles.container}>
-          <View style={styles.headerContainer}>
-            <View>
-              <AntDesign
-                onPress={() => navigation.openDrawer()}
-                name="menuunfold"
-                size={30}
-                color={'white'}
-              />
-            </View>
-            {preFieldValue === null ? (
-              <View>
-                <Text style={styles.headerText}>Add Address</Text>
-              </View>
-            ) : (
-              <View>
-                <Text style={styles.headerText}>Update Address</Text>
-              </View>
-            )}
-          </View>
+        <Header headerPageText={preFieldValue === null ? "Add Address" : "Update Address"} />
           <ScrollView>
             <View style={styles.maniContainer}>
               <TextInput
                 placeholder="Full Name"
+                placeholderTextColor="#000"
                 style={styles.inputField}
                 value={address.fullName}
                 onChangeText={value => handleInputChange('fullName', value)}
               />
               <TextInput
                 placeholder="Phone Number"
+                placeholderTextColor="#000"
                 style={styles.inputField}
                 value={address.phone}
                 onChangeText={value => handleInputChange('phone', value)}
               />
               <TextInput
                 placeholder="Pincode"
+                placeholderTextColor="#000"
                 style={styles.inputField}
                 value={address.postalCode}
                 onChangeText={value => handleInputChange('postalCode', value)}
               />
               <TextInput
                 placeholder="Country"
+                placeholderTextColor="#000"
                 style={styles.inputField}
                 value={address.country}
                 onChangeText={value => handleInputChange('country', value)}
               />
               <TextInput
                 placeholder="State"
+                placeholderTextColor="#000"
                 style={styles.inputField}
                 value={address.state}
                 onChangeText={value => handleInputChange('state', value)}
               />
               <TextInput
                 placeholder="City"
+                placeholderTextColor="#000"
                 style={styles.inputField}
                 value={address.city}
                 onChangeText={value => handleInputChange('city', value)}
               />
               <TextInput
                 placeholder="House No., Building Name"
+                placeholderTextColor="#000"
                 style={styles.inputField}
                 value={address.addressLine1}
                 onChangeText={value => handleInputChange('addressLine1', value)}
               />
               <TextInput
                 placeholder="Road name, Area, Colony"
+                placeholderTextColor="#000"
                 style={styles.inputField}
                 value={address.addressLine2}
                 onChangeText={value => handleInputChange('addressLine2', value)}
@@ -149,24 +137,13 @@ const styles = StyleSheet.create({
     height: '100%',
     backgroundColor: '#dfe4ea',
   },
-  headerContainer: {
-    height: 50,
-    backgroundColor: '#ff6600',
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    alignItems: 'center',
-    padding: 10,
-  },
+
   horizontal: {
     flexDirection: 'row',
     justifyContent: 'space-around',
     padding: 10,
   },
-  headerText: {
-    fontSize: 20,
-    color: '#fff',
-    marginRight: 130,
-  },
+
   maniContainer: {
     width: '100%',
     alignItems: 'center',
@@ -180,6 +157,7 @@ const styles = StyleSheet.create({
     padding: 10,
     marginTop: 20,
     backgroundColor: '#fff',
+    color:"#000",
   },
   buttonMain: {
     justifyContent: 'center',

@@ -17,11 +17,11 @@ export const getProduct = createAsyncThunk(
 export const getProductDetails = createAsyncThunk(
   'product/getProductDetails',
   async (id, thunkAPI) => {
-    const token = await AsyncStorage.getItem('token');
+    const token = await AsyncStorage.getItem("token")
     try {
-      const res = await axiosInstance.get(`/products/${id}`, {
+      const res = await axiosInstance.get(`/products/${id}`,{
         headers: {
-          Authorization: 'Bearer ' + token,
+          Authorization: token,
         },
       });
       return res.data;
@@ -30,6 +30,7 @@ export const getProductDetails = createAsyncThunk(
     }
   },
 );
+
 
 export const addToCart = createAsyncThunk(
   'add/addToCard',
@@ -71,7 +72,7 @@ export const emptyCart = createAsyncThunk(
         },
       });
       thunkAPI.dispatch(getCartItem(id));
-      return res.data
+      return res.data;
     } catch (error) {
       return thunkAPI.rejectWithValue(error);
     }
@@ -96,6 +97,27 @@ export const removeSingleProduct = createAsyncThunk(
   },
 );
 
+export const incrementItemInCart = createAsyncThunk(
+  'cart/incrementItemInCart',
+  async (data, thunkAPI) => {
+    const token = await AsyncStorage.getItem('token');
+    try {
+      const res = await axiosInstance.put(`cart/${data.id}`,{quantity: data.quantity}, {
+        headers: {
+          Authorization: token,
+        },
+      });
+      thunkAPI.dispatch(getCartItem(data.userId))
+      return res.data;
+    } catch (error) {
+      return thunkAPI.rejectWithValue(error);
+    }
+  },
+);
+
+
+
+
 const initialState = {
   product: [],
   productDetals: [],
@@ -103,6 +125,7 @@ const initialState = {
   isLoader: false,
   cartItem: [],
   isAddToCart: false,
+  totalPrice:0
 };
 
 const productSlice = createSlice({
@@ -117,6 +140,9 @@ const productSlice = createSlice({
     },
     setIsAddToCartFalse: state => {
       state.isAddToCart = false;
+    },
+    setTotalPrices: (state,action) => {
+      state.totalPrice = action.payload;
     },
   },
   extraReducers: builder => {
@@ -215,9 +241,23 @@ const productSlice = createSlice({
       state.status = 'rejected';
       state.isLoader = false;
     });
+    builder.addCase(incrementItemInCart.pending, state => {
+      state.status = 'pending';
+      state.isAddToCart = false;
+      state.isLoader = true;
+    }),
+      builder.addCase(incrementItemInCart.fulfilled, (state, action) => {
+        state.status = 'fulfilled';
+        state.isLoader = false;
+      });
+    builder.addCase(incrementItemInCart.rejected, state => {
+      state.status = 'rejected';
+      state.isLoader = false;
+    });
+
   },
 });
 
-export const {productReset, setIsAddToCartFalse, setIsAddToCartTrue} =
+export const {productReset, setIsAddToCartFalse, setIsAddToCartTrue,setTotalPrices} =
   productSlice.actions;
 export default productSlice.reducer;

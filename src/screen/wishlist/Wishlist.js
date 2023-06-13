@@ -10,9 +10,7 @@ import {
   View,
 } from 'react-native';
 import {useDispatch, useSelector} from 'react-redux';
-import {getCategory} from '../../features/categoryListing/CategoryListingSlice';
 import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons';
-import AntDesign from 'react-native-vector-icons/AntDesign';
 import {
   getWishlist,
   removeItemFromWishlist,
@@ -21,6 +19,7 @@ import AsyncStorage from '@react-native-async-storage/async-storage';
 import jwtDecode from 'jwt-decode';
 import {displayImageUrl} from '../../utils/ImageUrl';
 import {getProductDetails} from '../../features/productListing/ProductListingSlice';
+import Header from '../../utils/Header';
 
 const Wishlist = ({navigation}) => {
   const {wishList, isWishListLoader} = useSelector(state => state.wishlist);
@@ -59,26 +58,14 @@ const Wishlist = ({navigation}) => {
         </View>
       ) : (
         <View style={styles.container}>
-          <View style={styles.headerContainer}>
-            <View>
-              <AntDesign
-                onPress={() => navigation.openDrawer()}
-                name="menuunfold"
-                size={30}
-                color={'white'}
-              />
-            </View>
-            <View>
-              <Text style={styles.headerText}>Wishlist</Text>
-            </View>
-          </View>
+        <Header headerPageText="Wishlist" />
           <View
             style={{
               borderBottomColor: 'black',
               borderBottomWidth: StyleSheet.hairlineWidth,
             }}
           />
-          {wishList?.products > 0 ? (
+          {wishList?.products?.length > 0 ? (
             <View style={styles.cardContainer}>
               <FlashList
                 data={wishList?.products}
@@ -102,6 +89,7 @@ const Wishlist = ({navigation}) => {
                         <MaterialCommunityIcons
                           name="delete"
                           size={35}
+                          color={"black"}
                           onPress={() => handleRemoveItem(item.item._id)}
                         />
                         <Pressable
@@ -145,21 +133,10 @@ const styles = StyleSheet.create({
     height:"100%",
   },
   emptyText:{
-    fontSize:22
+    fontSize:22,
+    color:"#000"
   },
-  headerContainer: {
-    height: 50,
-    backgroundColor: '#ff6600',
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    alignItems: 'center',
-    padding: 10,
-  },
-  headerText: {
-    fontSize: 20,
-    color: '#fff',
-    marginRight: 150,
-  },
+
 
   cardContainer: {
     flexDirection: 'row',
@@ -193,17 +170,17 @@ const styles = StyleSheet.create({
     padding: 5,
   },
   buttonAddToCart: {
-    width: '55%',
+    width: '60%',
+    height:"auto",
     justifyContent: 'center',
     alignItems: 'center',
     backgroundColor: '#ff6600',
-    height: 40,
-    padding: 2,
+    padding: 4,
     borderRadius: 5,
   },
   buttonAddToCartText: {
     color: '#fff',
-    fontSize: 18,
+    fontSize: 16,
     fontWeight: '400',
   },
 });

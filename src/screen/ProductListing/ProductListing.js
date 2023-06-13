@@ -20,6 +20,7 @@ import {
 } from '../../features/productListing/ProductListingSlice';
 import {FlashList} from '@shopify/flash-list';
 import {displayImageUrl} from '../../utils/ImageUrl';
+import Header from '../../utils/Header';
 const ProductListing = ({navigation}) => {
   const {product, isLoader} = useSelector(state => state.userProduct);
   const [heart, setHeart] = useState(false);
@@ -48,17 +49,7 @@ const ProductListing = ({navigation}) => {
         </View>
       ) : (
         <View style={styles.container}>
-          <View style={styles.headerContainer}>
-              <AntDesign
-                onPress={() => navigation.openDrawer()}
-                name="menuunfold"
-                size={30}
-                color={'white'}
-              />
-            <View>
-              <Text style={styles.headerText}>Product Page</Text>
-            </View>
-          </View>
+        <Header headerPageText="Product Page" />
 
           <View style={styles.cardContainer}>
             <FlashList
@@ -119,14 +110,6 @@ const ProductListing = ({navigation}) => {
 export default ProductListing;
 
 const styles = StyleSheet.create({
-  headerContainer: {
-    height: 50,
-    backgroundColor: '#ff6600',
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    alignItems: 'center',
-    padding:10
-  },
   // heartIcon: {
   //   color: '#EDEAE9',
   // },
@@ -141,11 +124,7 @@ const styles = StyleSheet.create({
     justifyContent: 'space-around',
     padding: 10,
   },
-  headerText: {
-    fontSize: 20,
-    color: '#fff',
-    marginRight: 150,
-  },
+
   cartIcon: {
     marginRight: 18,
   },
