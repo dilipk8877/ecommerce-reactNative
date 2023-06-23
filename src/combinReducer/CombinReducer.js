@@ -6,6 +6,7 @@ import LoginSlice from "../features/loginSlice/LoginSlice"
 import Wishlist from "../features/wishlist/WishlistSlice"
 import AddressSlice from "../features/address/AddressSlice"
 import CreateOrder from "../features/address/CreateOrderSlice"
+import SearchSlice from "../features/searchProduct/SearchSlice"
 
 const rootReducer = combineReducers({
     userCategory:CategoryListingSlice,
@@ -15,7 +16,7 @@ const rootReducer = combineReducers({
     address:AddressSlice,
     wishlist:Wishlist,
     createOrder:CreateOrder,
-
+    searchItem:SearchSlice
 })
 
 export default rootReducer     

@@ -7,7 +7,6 @@ import {useNavigation} from '@react-navigation/native';
 import jwtDecode from 'jwt-decode';
 import React, {useEffect, useState} from 'react';
 import {
-  Button,
   Pressable,
   StyleSheet,
   Text,
@@ -22,15 +21,7 @@ const CustomDrawer = props => {
   const handleLogin = () => {
     navigation.navigate('LoginPage');
   };
-  const handleSignout = async () => {
-    await AsyncStorage.clear();
-    ToastAndroid.showWithGravity(
-      'Logout successfully',
-      ToastAndroid.SHORT,
-      ToastAndroid.CENTER,
-      );
-      navigation.navigate('LoginPage');
-  };
+
   const [user, setUser] = useState();
   const getToken = async () => {
     const token = await AsyncStorage.getItem('token');

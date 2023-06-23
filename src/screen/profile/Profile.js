@@ -129,14 +129,14 @@ const styles = StyleSheet.create({
   },
   mainLogout: {
     alignItems: 'center',
-    backgroundColor: '#c7c9c6',
-    height: 30,
+    backgroundColor: '#ff6600',
+    height: 40,
     justifyContent: 'center',
     borderRadius: 10,
   },
   logoutButton: {
     fontSize: 18,
-    color: '#F28346',
+    color: '#fff',
   },
   containerContent: {
     padding: 10,

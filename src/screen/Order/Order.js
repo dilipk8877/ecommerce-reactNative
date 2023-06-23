@@ -3,7 +3,6 @@ import React, {useEffect} from 'react';
 import {Image, StyleSheet, Text, TouchableOpacity, View} from 'react-native';
 import {useDispatch, useSelector} from 'react-redux';
 import StarRating from 'react-native-star-rating';
-import AntDesign from 'react-native-vector-icons/AntDesign';
 import { getOrder } from '../../features/address/CreateOrderSlice';
 import { ActivityIndicator } from 'react-native';
 import { useState } from 'react';
@@ -29,7 +28,6 @@ const OrderSection = ({navigation}) => {
   useEffect(() => {
     dispatch(getOrder(userId));
   }, [userId]);
-  console.log(orderList)
   return (
     <>
      {loading ? (

@@ -8,9 +8,12 @@ import {
   Text,
   TouchableOpacity,
   View,
-} from 'react-native';     
+} from 'react-native';
 import AntDesign from 'react-native-vector-icons/AntDesign';
-import {emptyCart, getCartItem} from '../../features/productListing/ProductListingSlice';
+import {
+  emptyCart,
+  getCartItem,
+} from '../../features/productListing/ProductListingSlice';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import jwtDecode from 'jwt-decode';
 import {useDispatch, useSelector} from 'react-redux';
@@ -19,13 +22,15 @@ import {displayImageUrl} from '../../utils/ImageUrl';
 import StarRating from 'react-native-star-rating';
 import FontAwesome from 'react-native-vector-icons/FontAwesome';
 import RazorpayCheckout from 'react-native-razorpay';
-import { updateOrder } from '../../features/address/CreateOrderSlice';
+import {updateOrder} from '../../features/address/CreateOrderSlice';
 import Header from '../../utils/Header';
 const OrderSummary = ({navigation}) => {
   const dispatch = useDispatch();
   // const [totalPrice, setTotalPrice] = useState(0);
   const {totalPrice, cartItem} = useSelector(state => state.userProduct);
-  const {deliveredAddress,orderId,loading} = useSelector((state) => state.createOrder)
+  const {deliveredAddress, orderId, loading} = useSelector(
+    state => state.createOrder,
+  );
   const [user, setUser] = useState();
   const getToken = async () => {
     const token = await AsyncStorage.getItem('token');
@@ -35,18 +40,13 @@ const OrderSummary = ({navigation}) => {
     }
   };
 
-
-
   useEffect(() => {
     getToken();
   }, []);
 
-
-
   useEffect(() => {
     dispatch(getCartItem(user?.id));
   }, [user]);
-
 
   const handlePlaceOrder = () => {
     var options = {
@@ -55,7 +55,7 @@ const OrderSummary = ({navigation}) => {
       key: 'rzp_test_Tiv5oHxAC3kTlH',
       amount: totalPrice * 100,
       name: 'Payments',
-      order_id: orderId.razorpayOrderId.id,
+      order_id: orderId?.razorpayOrderId?.id,
       prefill: {
         contact: deliveredAddress?.phone,
         name: deliveredAddress?.fullName,
@@ -64,17 +64,19 @@ const OrderSummary = ({navigation}) => {
     };
     RazorpayCheckout.open(options)
       .then(data => {
-        dispatch(updateOrder( {
-          userId: user?.id,
-          address:deliveredAddress,
-          totalAmount: totalPrice,
-          status: 'pending',
-          paymentId: data?.razorpay_payment_id,
-          testMode: true
-        }))
+        dispatch(
+          updateOrder({
+            userId: user?.id,
+            address: deliveredAddress,
+            totalAmount: totalPrice,
+            status: 'pending',
+            paymentId: data?.razorpay_payment_id,
+            testMode: true,
+          }),
+        );
         dispatch(emptyCart(user?.id));
-        navigation.navigate("CategoryListing")
-        alert("Payment Successful");
+        navigation.navigate('CategoryListing');
+        alert('Payment Successful');
       })
       .catch(error => {
         // handle failure
@@ -90,7 +92,7 @@ const OrderSummary = ({navigation}) => {
         </View>
       ) : (
         <>
-        <Header headerPageText="Order Summary" />
+          <Header headerPageText="Order Summary" />
           <ScrollView>
             <View style={styles.shippingDetails}>
               <View style={styles.shippingHeader}>
@@ -98,78 +100,93 @@ const OrderSummary = ({navigation}) => {
                   <Text style={styles.shippingHeaderText}>Deliver to: </Text>
                 </View>
                 <View>
-                  <Pressable style={styles.shippingButton} onPress={()=>navigation.navigate("SelectAddress")}>
+                  <Pressable
+                    style={styles.shippingButton}
+                    onPress={() => navigation.navigate('SelectAddress')}>
                     <Text style={styles.shippingButtonText}>Change</Text>
                   </Pressable>
                 </View>
               </View>
               <View style={styles.shippingWrap}>
-                <Text style={styles.userName}>{deliveredAddress?.fullName}</Text>
-                <Text style={styles.addresss}>{deliveredAddress?.addressLine1}, {deliveredAddress?.addressLine2},</Text>
-                <Text style={styles.phoneNumber}>{deliveredAddress?.postalCode}</Text>
-                <Text style={styles.phoneNumber}>{deliveredAddress?.phone}</Text>
+                <Text style={styles.userName}>
+                  {deliveredAddress?.fullName}
+                </Text>
+                <Text style={styles.addresss}>
+                  {deliveredAddress?.addressLine1},{' '}
+                  {deliveredAddress?.addressLine2},
+                </Text>
+                <Text style={styles.phoneNumber}>
+                  {deliveredAddress?.postalCode}
+                </Text>
+                <Text style={styles.phoneNumber}>
+                  {deliveredAddress?.phone}
+                </Text>
               </View>
             </View>
-            <View style={{width:"100%",height:"100%"}}>
-            <FlashList
-              data={cartItem}
-              estimatedItemSize={200}
-              renderItem={item => {
-                return (
-                  <TouchableOpacity style={styles.cartProductList}>
-                    <View>
-                      <Image
-                        source={{
-                          uri: displayImageUrl + item.item.product.thumbnail,
-                        }}
-                        style={styles.cartImage}
-                      />
-                      {/* <Text
+            <View style={{width: '100%', height: '100%'}}>
+              <FlashList
+                data={cartItem}
+                estimatedItemSize={200}
+                renderItem={item => {
+                  return (
+                    <TouchableOpacity style={styles.cartProductList}>
+                      <View>
+                        <Image
+                          source={{
+                            uri: displayImageUrl + item.item.product.thumbnail,
+                          }}
+                          style={styles.cartImage}
+                        />
+                        {/* <Text
                             style={styles.cartRemove}
                             onPress={() =>
                               handleSingleItemRemove(item.item.id)
                             }>
                             Remove
                           </Text> */}
-                    </View>
-                    <View style={styles.productDetails}>
-                      <Text style={styles.cartName}>
-                        {item?.item.product?.title}
-                      </Text>
-                      <View style={styles.counterContainer}>
-                        <Text style={styles.counterQuantity}>quantity: {item.item.quantity}</Text>
-                        <View style={styles.ratingContainer}>
-                          <StarRating
-                            disabled={true}
-                            maxStars={5}
-                            rating={item.item.product.rating}
-                            fullStarColor={'green'}
-                            starSize={20}
-                          />
+                      </View>
+                      <View style={styles.productDetails}>
+                        <Text style={styles.cartName}>
+                          {item?.item.product?.title}
+                        </Text>
+                        <View style={styles.counterContainer}>
+                          <Text style={styles.counterQuantity}>
+                            quantity: {item.item.quantity}
+                          </Text>
+                          <View style={styles.ratingContainer}>
+                            <StarRating
+                              disabled={true}
+                              maxStars={5}
+                              rating={item.item.product.rating}
+                              fullStarColor={'green'}
+                              starSize={20}
+                            />
+                          </View>
                         </View>
                       </View>
-                    </View>
-                  </TouchableOpacity>
-                );
-              }}
-            />
+                    </TouchableOpacity>
+                  );
+                }}
+              />
             </View>
           </ScrollView>
-          {orderId &&  <View style={styles.bottomConatiner}>
-            <View style={styles.cartBottom}>
-              <Text style={styles.cartPrice}>
-                {' '}
-                <FontAwesome name="rupee" size={18} color={'black'} />
-                {totalPrice}
-              </Text>
-              <Pressable
-                style={styles.CartPageBottom}
-                onPress={() => handlePlaceOrder()}>
-                <Text style={styles.CartPagePlace}>Continue</Text>
-              </Pressable>
+          {/* {orderId && (
+           
+          )} */}
+          <View style={styles.bottomConatiner}>
+              <View style={styles.cartBottom}>
+                <Text style={styles.cartPrice}>
+                  {' '}
+                  <FontAwesome name="rupee" size={18} color={'black'} />
+                  {totalPrice}
+                </Text>
+                <Pressable
+                  style={styles.CartPageBottom}
+                  onPress={() => handlePlaceOrder()}>
+                  <Text style={styles.CartPagePlace}>Continue</Text>
+                </Pressable>
+              </View>
             </View>
-          </View>}
-         
         </>
       )}
     </>
@@ -300,8 +317,8 @@ const styles = StyleSheet.create({
     // marginTop: 15,
     height: 50,
   },
-  counterQuantity:{
+  counterQuantity: {
     fontSize: 18,
-    color:"#000"
-  }
+    color: '#000',
+  },
 });

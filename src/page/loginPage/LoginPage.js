@@ -3,6 +3,7 @@ import {
   ActivityIndicator,
   Alert,
   Pressable,
+  ScrollView,
   StyleSheet,
   Text,
   TextInput,
@@ -26,22 +27,8 @@ import {useFormik} from 'formik';
 import * as Yup from 'yup';
 const LoginPage = ({navigation}) => {
   const route = useRoute();
-  const [email, setEmail] = useState('');
-  const [password, setPassword] = useState('');
   const dispatch = useDispatch();
   const {isLogin, status, isLoader} = useSelector(state => state.login);
-
-  const handleLogin = () => {
-    if (!email) {
-      Alert.alert('Please enter your email');
-      return;
-    }
-    if (!password) {
-      Alert.alert('Please enter your password');
-      return;
-    }
-    dispatch(getLogin({email, password}));
-  };
 
   const {values, handleChange, handleSubmit, touched, errors} = useFormik({
     initialValues: {
@@ -79,76 +66,74 @@ const LoginPage = ({navigation}) => {
     <>
       {isLoader ? (
         <View style={[styles.container, styles.horizontal]}>
-          <ActivityIndicator size="large" color="#ff6600" />
+          <ActivityIndicator size="large" color="#fff" />
         </View>
       ) : (
-        <LinearGradient
-          start={{x: 0, y: 0}}
-          end={{x: 1, y: 0}}
-          colors={['#efa248', '#f28346']}
-          style={styles.linearGradient}>
+        <ScrollView style={styles.container}>
           <View style={styles.header}>
             <Text style={styles.welcome}>Welcome Back</Text>
             <Text style={styles.welcomeMessage}>Signin to continue</Text>
           </View>
-          <View style={styles.formContainer}>
-            <View style={styles.formHeader}>
-              <Pressable>
-                <Text style={styles.login}>LOGIN</Text>
+          <View style={{alignItems: 'center'}}>
+            <View style={styles.formContainer}>
+              <View style={styles.formHeader}>
+                <Pressable>
+                  <Text style={styles.login}>LOGIN</Text>
+                  <LinearGradient
+                    start={{x: 0, y: 0}}
+                    end={{x: 1, y: 0}}
+                    colors={['#efa248', '#f28346']}
+                    style={styles.activeGradient}></LinearGradient>
+                </Pressable>
+                <Pressable onPress={() => navigation.navigate('SignupPage')}>
+                  <Text style={styles.signup}>SIGNUP</Text>
+                </Pressable>
+              </View>
+              <View style={styles.inputContainer}>
+                <View style={{width: '100%', marginBottom: 10}}>
+                  <Fontisto name="email" size={30} style={styles.emailIcon} />
+                  <TextInput
+                    style={styles.inputField}
+                    placeholder="Email"
+                    placeholderTextColor="#000"
+                    value={values.email}
+                    onChangeText={handleChange('email')}
+                  />
+                  {touched.email && errors.email && (
+                    <Text style={{color: 'red'}}>{errors.email}</Text>
+                  )}
+                </View>
+                <View style={{width: '100%', marginBottom: 10}}>
+                  <MaterialCommunityIcons
+                    name="lock-open-check-outline"
+                    size={30}
+                    style={styles.passwordsIcon}
+                  />
+                  <TextInput
+                    placeholder="Password"
+                    placeholderTextColor="#000"
+                    style={styles.inputField}
+                    secureTextEntry={true}
+                    value={values.password}
+                    onChangeText={handleChange('password')}
+                  />
+                  {touched.password && errors.password && (
+                    <Text style={{color: 'red'}}>{errors.password}</Text>
+                  )}
+                </View>
+              </View>
+              <Pressable onPress={handleSubmit}>
                 <LinearGradient
                   start={{x: 0, y: 0}}
                   end={{x: 1, y: 0}}
                   colors={['#efa248', '#f28346']}
-                  style={styles.activeGradient}></LinearGradient>
-              </Pressable>
-              <Pressable onPress={() => navigation.navigate('SignupPage')}>
-                <Text style={styles.signup}>SIGNUP</Text>
+                  style={styles.buttonGradient}>
+                  <Text style={styles.buttonText}>Login</Text>
+                </LinearGradient>
               </Pressable>
             </View>
-            <View style={styles.inputContainer}>
-              <View style={{width: '100%', marginBottom: 10}}>
-                <Fontisto name="email" size={30} style={styles.emailIcon} />
-                <TextInput
-                  style={styles.inputField}
-                  placeholder="Email"
-                  placeholderTextColor="#000"
-                  value={values.email}
-                  onChangeText={handleChange('email')}
-                />
-                {touched.email && errors.email && (
-                  <Text style={{color: 'red'}}>{errors.email}</Text>
-                )}
-              </View>
-              <View style={{width: '100%', marginBottom: 10}}>
-                <MaterialCommunityIcons
-                  name="lock-open-check-outline"
-                  size={30}
-                  style={styles.passwordsIcon}
-                />
-                <TextInput
-                  placeholder="Password"
-                  placeholderTextColor="#000"
-                  style={styles.inputField}
-                  secureTextEntry={true}
-                  value={values.password}
-                  onChangeText={handleChange('password')}
-                />
-                {touched.password && errors.password && (
-                  <Text style={{color: 'red'}}>{errors.password}</Text>
-                )}
-              </View>
-            </View>
-            <Pressable onPress={handleSubmit}>
-              <LinearGradient
-                start={{x: 0, y: 0}}
-                end={{x: 1, y: 0}}
-                colors={['#efa248', '#f28346']}
-                style={styles.buttonGradient}>
-                <Text style={styles.buttonText}>Login</Text>
-              </LinearGradient>
-            </Pressable>
           </View>
-        </LinearGradient>
+        </ScrollView>
       )}
     </>
   );
@@ -160,6 +145,7 @@ const styles = StyleSheet.create({
   container: {
     // flex: 1,
     height: '100%',
+    backgroundColor: '#ff6600',
   },
   horizontal: {
     flexDirection: 'row',

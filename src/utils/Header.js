@@ -1,10 +1,17 @@
-import { useNavigation } from '@react-navigation/native';
+import {useNavigation} from '@react-navigation/native';
 import React from 'react';
 import {View, Text, StyleSheet} from 'react-native';
 import AntDesign from 'react-native-vector-icons/AntDesign';
+import { useDispatch } from 'react-redux';
+import { searchProduct } from '../features/searchProduct/SearchSlice';
 
 const Header = ({headerPageText}) => {
-    const navigation = useNavigation()
+  const dispatch = useDispatch()
+  const navigation = useNavigation();
+  const handleSearch = () =>{
+    dispatch(searchProduct(''))
+    navigation.navigate('SearchPage')
+  }
   return (
     <View style={styles.headerContainer}>
       <View style={styles.headerIcon}>
@@ -18,6 +25,17 @@ const Header = ({headerPageText}) => {
       <View>
         <Text style={styles.headerText}>{headerPageText}</Text>
       </View>
+      {headerPageText === 'Category Page' && (
+        <View style={styles.searchIcon}>
+          <AntDesign
+            name="search1"
+            color="white"
+            size={25}
+            onPress={handleSearch}
+
+          />
+        </View>
+      )}
     </View>
   );
 };
@@ -40,5 +58,9 @@ const styles = StyleSheet.create({
   headerText: {
     fontSize: 20,
     color: '#fff',
+  },
+  searchIcon: {
+    position: 'absolute',
+    right: 5,
   },
 });

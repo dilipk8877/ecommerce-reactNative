@@ -13,7 +13,7 @@ export const getLogin = createAsyncThunk(
       data.actiom.resetForm()
       return res.dara;
     } catch (error) {
-      return thunkAPI.rejectWithValue(error);
+      return thunkAPI.rejectWithValue(error.response.data);
     }
   },
 );
@@ -65,6 +65,11 @@ const loginSlice = createSlice({
       builder.addCase(getLogin.rejected, (state, action) => {
         state.status = 'rejected';
         state.isLoader = false;
+        ToastAndroid.showWithGravity(
+          action.payload?.message,
+          ToastAndroid.LONG,
+          ToastAndroid.CENTER,
+        );
       });
   },
 });

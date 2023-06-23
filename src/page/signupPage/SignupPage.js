@@ -17,26 +17,9 @@ import {getSignup} from '../../features/signupSlice/SignupSlice';
 import {useFormik} from 'formik';
 
 import * as Yup from 'yup';
-import { getTokenAccess } from '../../utils/AxiosInstance';
 const SignupPage = ({navigation}) => {
   const {isLoader} = useSelector(state => state.signup);
   const dispatch = useDispatch();
-
-  const [token, setToken] = useState('');
-
-  useEffect(() => {
-    getTokenAccess().then((token) => {
-      if (token) {
-        setToken(token);
-      }
-    });
-  }, []);
-  useEffect(()=>{
-    if(token) {
-      navigation.navigate("CategoryListing")
-    }
-  },[token])
-
   const phoneRegExp =
     /^((\\+[1-9]{1,4}[ \\-]*)|(\\([0-9]{2,3}\\)[ \\-]*)|([0-9]{2,4})[ \\-]*)*?[0-9]{3,4}?[ \\-]*[0-9]{3,4}?$/;
   const {
@@ -60,120 +43,121 @@ const SignupPage = ({navigation}) => {
       phone: Yup.string()
         .required('Please enter phone number')
         .matches(phoneRegExp, 'Phone number is not valid'),
-      password: Yup.string().required('Please enter password'),
+      password: Yup
+      .string().required('Please enter password')
+      .min(8, 'Password must be 8 characters long')
+      .matches(/[0-9]/, 'Password requires a number')
+      .matches(/[a-z]/, 'Password requires a lowercase letter')
+      .matches(/[A-Z]/, 'Password requires an uppercase letter')
+      .matches(/[^\w]/, 'Password requires a symbol'),
     }),
-    onSubmit: (data,action) => {
-      dispatch(getSignup({user:data,navigation}))
+    onSubmit: userData => {
+      dispatch(getSignup({userData,navigation}))
     },
   });
-
 
   return (
     <>
       {isLoader ? (
         <View style={[styles.container, styles.horizontal]}>
-          <ActivityIndicator size="large" color="#ff6600" />
+          <ActivityIndicator size="large" color="#fff" />
         </View>
       ) : (
-        <LinearGradient
-          start={{x: 0, y: 0}}
-          end={{x: 1, y: 0}}
-          colors={['#efa248', '#f28346']}
-          style={styles.linearGradient}>
-          <View style={styles.header}>
-            <Text style={styles.welcome}>Welcome</Text>
-            <Text style={styles.welcomeMessage}>Signup to continue</Text>
-          </View>
-          <View style={styles.formContainer}>
-            <View style={styles.formHeader}>
-              <Pressable onPress={() => navigation.navigate('LoginPage')}>
-                <Text style={styles.login}>LOGIN</Text>
-              </Pressable>
-              <Pressable>
-                <Text style={styles.signup}>SIGNUP</Text>
-                <LinearGradient
-                  start={{x: 0, y: 0}}
-                  end={{x: 1, y: 0}}
-                  colors={['#efa248', '#f28346']}
-                  style={styles.activeGradient}></LinearGradient>
-              </Pressable>
+        <>
+          <ScrollView style={styles.container}>
+            <View style={styles.header}>
+              <Text style={styles.welcome}>Welcome</Text>
+              <Text style={styles.welcomeMessage}>Signup to continue</Text>
             </View>
-            <View style={styles.inputContainer}>
-              <View style={{width: '100%', marginBottom: 10}}>
-                <Ionicons
-                  name="person-outline"
-                  size={30}
-                  style={styles.personIcon}
-                />
-                <TextInput
-                  style={styles.inputFieldUser}
-                  placeholder="User Name"
-                  placeholderTextColor="#000"
-                  value={values.name}
-                  onChangeText={handleChange('name')}
-                />
-                {touched.name && errors.name && (
-                  <Text style={{color: 'red'}}>{errors.name}</Text>
-                )}
-              </View>
-              <View style={{width: '100%', marginBottom: 10}}>
-                <Fontisto name="email" size={30} style={styles.emailIcon} />
-                <TextInput
-                  style={styles.inputFieldEmail}
-                  placeholder="Email"
-                  placeholderTextColor="#000"
-                  value={values.email}
-                  onChangeText={handleChange('email')}
-                />
-                {touched.email && errors.email && (
-                  <Text style={{color: 'red'}}>{errors.email}</Text>
-                )}
-              </View>
+            <View style={{alignItems: 'center'}}>
+              <View style={styles.formContainer}>
+                <View style={styles.formHeader}>
+                  <Pressable onPress={() => navigation.navigate('LoginPage')}>
+                    <Text style={styles.login}>LOGIN</Text>
+                  </Pressable>
+                  <Pressable>
+                    <Text style={styles.signup}>SIGNUP</Text>
+                    <LinearGradient
+                      start={{x: 0, y: 0}}
+                      end={{x: 1, y: 0}}
+                      colors={['#efa248', '#f28346']}
+                      style={styles.activeGradient}></LinearGradient>
+                  </Pressable>
+                </View>
+                <View style={styles.inputContainer}>
+                  <View style={{width: '100%', marginBottom: 10}}>
+                    <Ionicons
+                      name="person-outline"
+                      size={30}
+                      style={styles.personIcon}
+                    />
+                    <TextInput
+                      style={styles.inputFieldUser}
+                      placeholder="User Name"
+                      value={values.name}
+                      onChangeText={handleChange('name')}
+                    />
+                    {touched.name && errors.name && (
+                      <Text style={{color: 'red'}}>{errors.name}</Text>
+                    )}
+                  </View>
+                  <View style={{width: '100%', marginBottom: 10}}>
+                    <Fontisto name="email" size={30} style={styles.emailIcon} />
+                    <TextInput
+                      style={styles.inputFieldEmail}
+                      placeholder="Email"
+                      value={values.email}
+                      onChangeText={handleChange('email')}
+                    />
+                    {touched.email && errors.email && (
+                      <Text style={{color: 'red'}}>{errors.email}</Text>
+                    )}
+                  </View>
 
-              <View style={{width: '100%', marginBottom: 10}}>
-                <Fontisto name="phone" size={22} style={styles.phoneIcon} />
-                <TextInput
-                  style={styles.inputFieldPhone}
-                  placeholder="Phone Number"
-                  placeholderTextColor="#000"
-                  value={values.phone}
-                  onChangeText={handleChange('phone')}
-                />
-                {touched.phone && errors.phone && (
-                  <Text style={{color: 'red'}}>{errors.phone}</Text>
-                )}
-              </View>
+                  <View style={{width: '100%', marginBottom: 10}}>
+                    <Fontisto name="phone" size={22} style={styles.phoneIcon} />
+                    <TextInput
+                      style={styles.inputFieldPhone}
+                      placeholder="Phone Number"
+                      value={values.phone}
+                      onChangeText={handleChange('phone')}
+                    />
+                    {touched.phone && errors.phone && (
+                      <Text style={{color: 'red'}}>{errors.phone}</Text>
+                    )}
+                  </View>
 
-              <View style={{width: '100%', marginBottom: 10}}>
-                <MaterialCommunityIcons
-                  name="lock-open-check-outline"
-                  size={30}
-                  style={styles.passwordsIcon}
-                />
-                <TextInput
-                  style={styles.inputFieldPassword}
-                  placeholder="Password"
-                  placeholderTextColor="#000"
-                  secureTextEntry={true}
-                  value={values.password}
-                  onChangeText={handleChange('password')}
-                />
-                {touched.password && errors.password && (
-                  <Text style={{color: 'red'}}>{errors.password}</Text>
-                )}
+                  <View style={{width: '100%', marginBottom: 10}}>
+                    <MaterialCommunityIcons
+                      name="lock-open-check-outline"
+                      size={30}
+                      style={styles.passwordsIcon}
+                    />
+                    <TextInput
+                      style={styles.inputFieldPassword}
+                      placeholder="Password"
+                      secureTextEntry={true}
+                      value={values.password}
+                      onChangeText={handleChange('password')}
+                    />
+                    {touched.password && errors.password && (
+                      <Text style={{color: 'red'}}>{errors.password}</Text>
+                    )}
+                  </View>
+                </View>
+                <Pressable onPress={handleSubmit}>
+                  <LinearGradient
+                    start={{x: 0, y: 0}}
+                    end={{x: 1, y: 0}}
+                    colors={['#efa248', '#f28346']}
+                    style={styles.buttonGradient}>
+                    <Text style={styles.buttonText}>Signup</Text>
+                  </LinearGradient>
+                </Pressable>
               </View>
             </View>
-            <Pressable onPress={handleSubmit}>
-              <LinearGradient
-                start={{x: 0, y: 0}}
-                end={{x: 1, y: 0}}
-                colors={['#efa248', '#f28346']}
-                style={styles.buttonGradient}>
-                <Text style={styles.buttonText}>Signup</Text>
-              </LinearGradient>
-            </Pressable>
-          </View>
-        </LinearGradient>
+          </ScrollView>
+        </>
       )}
     </>
   );
@@ -185,6 +169,8 @@ const styles = StyleSheet.create({
   container: {
     // flex: 1,
     height: '100%',
+    // width: '100%',
+    backgroundColor: '#ff6600',
   },
   horizontal: {
     flexDirection: 'row',
@@ -218,7 +204,7 @@ const styles = StyleSheet.create({
     width: '80%',
     height: 'auto',
     backgroundColor: '#fff',
-    marginTop: 50,
+    marginTop: 20,
     borderRadius: 20,
     padding: 10,
     alignItems: 'center',
@@ -254,10 +240,8 @@ const styles = StyleSheet.create({
     borderColor: 'gray',
     borderWidth: 1,
     borderRadius: 50,
-    // marginBottom: 10,
     paddingLeft: 45,
     fontSize: 15,
-    color: 'black',
   },
   inputFieldEmail: {
     width: '100%',
@@ -265,7 +249,6 @@ const styles = StyleSheet.create({
     borderColor: 'grey',
     borderWidth: 1,
     borderRadius: 50,
-    // marginBottom: 10,
     paddingLeft: 45,
     fontSize: 15,
     color: 'black',
@@ -276,7 +259,6 @@ const styles = StyleSheet.create({
     borderColor: 'grey',
     borderWidth: 1,
     borderRadius: 50,
-    // marginBottom: 10,
     paddingLeft: 45,
     fontSize: 15,
     color: 'black',
@@ -287,7 +269,6 @@ const styles = StyleSheet.create({
     borderColor: 'grey',
     borderWidth: 1,
     borderRadius: 50,
-    // marginBottom: 10,
     paddingLeft: 45,
     fontSize: 15,
     color: 'black',

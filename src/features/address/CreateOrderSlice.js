@@ -42,7 +42,6 @@ export const getOrder = createAsyncThunk(
             Authorization: "Bearer " + token,
           },
         });
-        console.log("ffgg",res.data)
         return res.data
       } catch (error) {
         return thunkAPI.rejectWithValue(error);

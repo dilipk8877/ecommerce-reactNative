@@ -6,6 +6,7 @@ import {
   Text,
   TouchableOpacity,
   ActivityIndicator,
+  Alert,
 } from 'react-native';
 import AntDesign from 'react-native-vector-icons/AntDesign';
 
@@ -15,6 +16,8 @@ import {getCategory} from '../../features/categoryListing/CategoryListingSlice';
 import {FlashList} from '@shopify/flash-list';
 import {getProduct} from '../../features/productListing/ProductListingSlice';
 import Header from '../../utils/Header';
+import {requestUserPermission} from '../../utils/NotificationService';
+import messaging from '@react-native-firebase/messaging';
 
 const CategoryListing = ({navigation}) => {
   const {category, isLoader} = useSelector(state => state.userCategory);
@@ -22,6 +25,24 @@ const CategoryListing = ({navigation}) => {
 
   useEffect(() => {
     dispatch(getCategory());
+  }, []);
+
+  useEffect(() => {
+    if (requestUserPermission()) {
+      messaging()
+        .getToken()
+        .then(fcmToken => {
+          console.log('FCM Token -> ', fcmToken);
+        });
+    } else console.log('Not Authorization status:', authStatus);
+  }, []);
+
+  useEffect(() => {
+    const unsubscribe = messaging().onMessage(async remoteMessage => {
+      Alert.alert('A new FCM message arrived!', JSON.stringify(remoteMessage));
+    });
+
+    return unsubscribe;
   }, []);
 
   const handleProductPage = id => {
@@ -37,7 +58,7 @@ const CategoryListing = ({navigation}) => {
         </View>
       ) : (
         <View style={styles.container}>
-         <Header headerPageText="Category Page"/>
+          <Header headerPageText="Category Page" />
           <View style={styles.cardContainer}>
             <FlashList
               // horizontal={true}

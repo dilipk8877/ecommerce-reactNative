@@ -10,14 +10,13 @@ export const getSignup = createAsyncThunk(
     try {
       const res = await axiosInstance.post(
         '/users/register',
-        data.user
+        data.userData
       );
-         
       await AsyncStorage.setItem("token",res.data.token)
       data.navigation.navigate("LoginPage")
       return res.data;
     } catch (e) {
-      return thunkAPI.rejectWithValue(e);
+      return thunkAPI.rejectWithValue(e.response.data);
     }
   },
 );
@@ -26,6 +25,7 @@ export const getSignup = createAsyncThunk(
 const initialState = {
   status: null,
   isSignup: AsyncStorage.getItem('token') ? true : false,
+  isLoader:false,
 };
 
 
@@ -36,19 +36,27 @@ const signupSlice = createSlice({
   extraReducers: builder => {
     builder.addCase(getSignup.pending, state => {
       state.status = 'pending';
+      state.isLoader=true
     }),
       builder.addCase(getSignup.fulfilled, (state, action) => {
         state.status = 'fulfilled';
+      state.isLoader=false
         AsyncStorage.setItem("token",res.data.token)
         state.isSignup = true;
         ToastAndroid.showWithGravity(
           action.payload.message,
-          ToastAndroid.SHORT,
+          ToastAndroid.LONG,
           ToastAndroid.CENTER,
         );
       }),
       builder.addCase(getSignup.rejected, (state, action) => {
         state.status = 'rejected';
+      state.isLoader=false
+        ToastAndroid.showWithGravity(
+          action.payload.message,
+          ToastAndroid.LONG,
+          ToastAndroid.CENTER,
+        );
       });
   },
 });

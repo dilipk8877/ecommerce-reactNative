@@ -9,6 +9,7 @@ import ShippingAddress from '../../screen/shippingAddress/ShippingAddress';
 import AddAddress from '../../screen/shippingAddress/AddAddress';
 import OrderSummary from '../../screen/cartPage/OrderSummary';
 import SelectAddress from '../../screen/shippingAddress/SelectAddress';
+import SearchPage from '../../screen/searchPage/SearchPage';
 const Stack = createNativeStackNavigator();
 const Parent = () => {
   return (
@@ -57,7 +58,13 @@ const Parent = () => {
       name="SelectAddress"
       component={SelectAddress}
       options={{headerShown: false}}/>
+       <Stack.Screen
+        name="SearchPage"
+        component={SearchPage}
+        options={{headerShown: false}}
+      />
     </Stack.Navigator>
+    
   );
 };
 
