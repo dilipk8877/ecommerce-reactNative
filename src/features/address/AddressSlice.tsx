@@ -1,7 +1,65 @@
-import {createAsyncThunk, createSlice} from '@reduxjs/toolkit';
-import {axiosInstance} from '../../utils/AxiosInstance';
+import { createAsyncThunk, createSlice } from '@reduxjs/toolkit';
+import { axiosInstance } from '../../utils/AxiosInstance';
 import AsyncStorage from '@react-native-async-storage/async-storage';
-import {ToastAndroid} from 'react-native';
+import { ToastAndroid } from 'react-native';
+
+
+export interface AddressState {
+  isLoader: boolean;
+  // address:Array;
+  status: String,
+  preFieldValue: null,
+  address:{
+    fullName: String,
+    addressLine1: String,
+    addressLine2: String,
+    city: String,
+    state: String,
+    postalCode: Number,
+    country: String,
+    phone: Number,
+  }[]
+}
+
+
+
+const initialState: AddressState = {
+  address:[],
+  isLoader: false,
+  status: "",
+  preFieldValue: null,
+};
+
+interface AddressSlice {
+    address: {
+      fullName: string;
+      addressLine1: string;
+      addressLine2: string;
+      city: string;
+      state: string;
+      postalCode: string;
+      country: string;
+      phone: string;
+    },
+    navigation: any,
+    // id: Number
+}
+
+interface UpdateAddressSlice {
+  address: {
+    fullName: string;
+    addressLine1: string;
+    addressLine2: string;
+    city: string;
+    state: string;
+    postalCode: string;
+    country: string;
+    phone: string;
+  },
+  navigation: any,
+  id: Number
+}
+
 export const getAllAddress = createAsyncThunk(
   'address/getAllAddress',
   async (_, thunkAPI) => {
@@ -20,7 +78,7 @@ export const getAllAddress = createAsyncThunk(
 );
 export const addAddress = createAsyncThunk(
   'add/addAddress',
-  async (data, thunkAPI) => {
+  async (data: AddressSlice, thunkAPI) => {
     const token = await AsyncStorage.getItem('token');
     try {
       const res = await axiosInstance.post('/address/add', data.address, {
@@ -57,7 +115,7 @@ export const deleteAddress = createAsyncThunk(
 
 export const updateAddress = createAsyncThunk(
   'update/updateAddress',
-  async (data, thunkAPI) => {
+  async (data: UpdateAddressSlice, thunkAPI) => {
     const token = await AsyncStorage.getItem('token');
 
     try {
@@ -74,12 +132,7 @@ export const updateAddress = createAsyncThunk(
     }
   },
 );
-const initialState = {
-  address: [],
-  isLoader: false,
-  status: null,
-  preFieldValue: null,
-};
+
 
 const addressSlice = createSlice({
   name: 'address',
@@ -111,19 +164,19 @@ const addressSlice = createSlice({
         state.status = 'pending';
         state.isLoader = true;
       }),
-        builder.addCase(updateAddress.fulfilled, (state, action) => {
-          state.status = 'success';
-          state.isLoader = false;
-          ToastAndroid.showWithGravity(
-            action.payload?.message,
-            ToastAndroid.SHORT,
-            ToastAndroid.CENTER,
-          );
-        }),
-        builder.addCase(updateAddress.rejected, state => {
-          state.status = 'rejected';
-          state.isLoader = false;
-        }),
+      builder.addCase(updateAddress.fulfilled, (state, action) => {
+        state.status = 'success';
+        state.isLoader = false;
+        ToastAndroid.showWithGravity(
+          action.payload?.message,
+          ToastAndroid.SHORT,
+          ToastAndroid.CENTER,
+        );
+      }),
+      builder.addCase(updateAddress.rejected, state => {
+        state.status = 'rejected';
+        state.isLoader = false;
+      }),
       builder.addCase(getAllAddress.pending, state => {
         state.status = 'pending';
         state.isLoader = true;
@@ -162,5 +215,5 @@ const addressSlice = createSlice({
   },
 });
 
-export const {setEditValue} = addressSlice.actions;
+export const { setEditValue } = addressSlice.actions;
 export default addressSlice.reducer;

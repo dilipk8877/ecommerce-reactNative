@@ -2,6 +2,21 @@ import { createAsyncThunk, createSlice } from "@reduxjs/toolkit";
 import { axiosInstance } from "../../utils/AxiosInstance";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 
+interface IState{
+    loading:boolean,
+    status: string| null,
+    deliveredAddress:null,
+    orderId:null,   
+    orderList: []
+}
+
+const initialState:IState ={
+    loading:false,
+    status: null,
+    deliveredAddress:null,
+    orderId:null,   
+    orderList: []
+}
 export const createOrder = createAsyncThunk("order/createOrder",async(data,thunkAPI)=>{
     const token = await AsyncStorage.getItem("token");
     try{
@@ -49,13 +64,7 @@ export const getOrder = createAsyncThunk(
     },
   );
 
-const initialState ={
-    loading:false,
-    status: null,
-    deliveredAddress:null,
-    orderId:null,   
-    orderList: []
-}
+
 
 const createOrderSlice = createSlice({
     name: "createOrder",

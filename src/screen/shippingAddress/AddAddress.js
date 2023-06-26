@@ -8,7 +8,7 @@ import {
   ScrollView,
   ActivityIndicator,
 } from 'react-native';
-import AntDesign from 'react-native-vector-icons/AntDesign';
+
 import {useDispatch, useSelector} from 'react-redux';
 import {addAddress, updateAddress} from '../../features/address/AddressSlice';
 import Header from '../../utils/Header';
@@ -48,7 +48,7 @@ const AddAddress = ({navigation}) => {
         </View>
       ) : (
         <View style={styles.container}>
-        <Header headerPageText={preFieldValue === null ? "Add Address" : "Update Address"} />
+        <Header headerPageText={preFieldValue === "" ? "Add Address" : "Update Address"} />
           <ScrollView>
             <View style={styles.maniContainer}>
               <TextInput

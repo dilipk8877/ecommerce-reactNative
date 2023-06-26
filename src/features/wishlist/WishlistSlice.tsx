@@ -4,9 +4,20 @@ import {ToastAndroid} from 'react-native';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { getProductDetails } from '../productListing/ProductListingSlice';
 
+interface IState{
+  wishList: any[],
+  status: string | null,
+  isWishListLoader: boolean,
+}
+const initialState:IState = {
+  wishList: [],
+  status: null,
+  isWishListLoader: false,
+};
+
 export const getWishlist = createAsyncThunk(
   'wishlist/getWishlist',
-  async (userId, thunkAPI) => {
+  async (userId:string, thunkAPI) => {
     const token = await AsyncStorage.getItem('token');
     try {
       const res = await axiosInstance.get(`/wishlist/${userId}`, {
@@ -23,7 +34,7 @@ export const getWishlist = createAsyncThunk(
 
 export const addWishlist = createAsyncThunk(
   'wishlist/addWishlist',
-  async (productId, thunkAPI) => {
+  async (productId:string, thunkAPI) => {
     const token = await AsyncStorage.getItem('token');
     try {
       const res = await axiosInstance.post(
@@ -45,7 +56,7 @@ export const addWishlist = createAsyncThunk(
 
 export const removeItemFromWishlist = createAsyncThunk(
   'wishlist/removeItemFromWishlist',
-  async (data, thunkAPI) => {
+  async (data:{id:string,userId:string}, thunkAPI) => {
     const token = await AsyncStorage.getItem('token');
     try {
       const res = await axiosInstance.delete(`/wishlist/${data.id}`, {
@@ -61,11 +72,6 @@ export const removeItemFromWishlist = createAsyncThunk(
   },
 );
 
-const initialState = {
-  wishList: [],
-  status: null,
-  isWishListLoader: false,
-};
 
 const wishlishSlice = createSlice({
   name: 'wishlist',

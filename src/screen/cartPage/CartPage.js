@@ -27,7 +27,7 @@ import UserNotLogin from './UserNotLogin';
 import {displayImageUrl} from '../../utils/ImageUrl';
 import FontAwesome from 'react-native-vector-icons/FontAwesome';
 import Header from '../../utils/Header';
-
+import { CartImage } from '../../assets';
 const CartPage = ({navigation}) => {
   const {isLoader, cartItem} = useSelector(state => state.userProduct);
   const {isLogin} = useSelector(state => state.login);
@@ -181,10 +181,11 @@ const CartPage = ({navigation}) => {
                 />
               ) : (
                 <View style={styles.emptyCart}>
-                  <Image
+                  {/* <Image
                     source={require('../../assets/image/png-transparent-empty-cart-illustration-thumbnail-removebg-preview.png')}
                     style={styles.CartImage}
-                  />
+                  /> */}
+                  <CartImage  style={styles.CartImage}/>
                   <Text style={styles.emptyCartText}>Your Cart is Empty</Text>
                   <Text
                     style={styles.emptyCartLink}

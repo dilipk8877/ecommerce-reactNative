@@ -15,7 +15,7 @@ export const getCategory = createAsyncThunk(
 
 const initialState = {
   category: [],
-  status: null,
+  status: "",
   isLoader: false,
 };
 

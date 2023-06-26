@@ -3,30 +3,37 @@ import {axiosInstance} from '../../utils/AxiosInstance';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { ToastAndroid } from 'react-native';
 
+interface IState{
+  status: string | null,
+  isLogin: boolean,
+  isLoader:boolean,
+  userToken:string | null,
+}
+
+const initialState:IState = {
+  status: null,
+  isLogin: false,
+  isLoader:false,
+  userToken:null,
+};
+
 export const getLogin = createAsyncThunk(
   'login/getLogin',
-  async (data, thunkAPI) => {
+  async (data:{data:string}, thunkAPI) => {
     try {
       const res = await axiosInstance.post('/users/login', data.data);
      await AsyncStorage.setItem('token', res.data.token);
-      thunkAPI.dispatch(setIslogin())
-      data.actiom.resetForm()
-      return res.dara;
-    } catch (error) {
+     
+      return res.data;
+    } catch (error:any) {
+      console.log(error)
       return thunkAPI.rejectWithValue(error.response.data);
     }
   },
 );
 
-// const userToekn = AsyncStorage.getItem("token") ? AsyncStorage.getItem("token") : null; 
 
-const initialState = {
-  status: null,
-  isLogin: AsyncStorage.getItem('token') ? true : false,
-  isLoader:false,
-  user:null,
-  userToken:null,
-};
+
 
 const loginSlice = createSlice({
   name: 'login',
@@ -37,14 +44,12 @@ const loginSlice = createSlice({
       state.isLogin = false;
     },
     setIslogin:(state,action)=>{
-      state.isLogin = true
+      state.isLogin = action.payload
     },
     setIslogout:(state,action)=>{
       state.isLogin = false
     },
-    setUserDetails:(state,action)=>{
-      state.user= action.payload
-    }
+
   },
   extraReducers: builder => {
     builder.addCase(getLogin.pending, state => {
@@ -62,16 +67,16 @@ const loginSlice = createSlice({
           ToastAndroid.CENTER,
         );
       }),
-      builder.addCase(getLogin.rejected, (state, action) => {
+      builder.addCase(getLogin.rejected, (state, {payload}:any) => {
         state.status = 'rejected';
         state.isLoader = false;
         ToastAndroid.showWithGravity(
-          action.payload?.message,
+          payload?.message,
           ToastAndroid.LONG,
           ToastAndroid.CENTER,
         );
       });
   },
 });
-export const {logOutUser, setIslogin, setIslogout, setUserDetails} = loginSlice.actions
+export const {logOutUser, setIslogin, setIslogout} = loginSlice.actions
 export default loginSlice.reducer;

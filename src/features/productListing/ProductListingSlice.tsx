@@ -1,7 +1,30 @@
 import AsyncStorage from '@react-native-async-storage/async-storage';
-import {axiosInstance} from '../../utils/AxiosInstance';
-import {createSlice, createAsyncThunk} from '@reduxjs/toolkit';
-import {ToastAndroid} from 'react-native';
+import { axiosInstance } from '../../utils/AxiosInstance';
+import { createSlice, createAsyncThunk } from '@reduxjs/toolkit';
+import { ToastAndroid } from 'react-native';
+
+interface ProductIntialState {
+  product: any[],
+  productDetals: any[],
+  status: string | null,
+  isLoader: boolean,
+  cartItem: any[],
+  isAddToCart: boolean,
+  totalPrice: number
+}
+
+const initialState: ProductIntialState = {
+  product: [],
+  productDetals: [],
+  status: null,
+  isLoader: false,
+  cartItem: [],
+  isAddToCart: false,
+  totalPrice: 0
+};
+
+
+
 export const getProduct = createAsyncThunk(
   'product/getProduct',
   async (id, thunkAPI) => {
@@ -16,10 +39,10 @@ export const getProduct = createAsyncThunk(
 
 export const getProductDetails = createAsyncThunk(
   'product/getProductDetails',
-  async (id, thunkAPI) => {
+  async (id:string, thunkAPI) => {
     const token = await AsyncStorage.getItem("token")
     try {
-      const res = await axiosInstance.get(`/products/${id}`,{
+      const res = await axiosInstance.get(`/products/${id}`, {
         headers: {
           Authorization: token,
         },
@@ -51,7 +74,7 @@ export const addToCart = createAsyncThunk(
 
 export const getCartItem = createAsyncThunk(
   'get/getCartItem',
-  async (userId, thunkAPI) => {
+  async (userId:string, thunkAPI) => {
     try {
       const res = await axiosInstance.get(`cart/${userId}`);
       return res.data;
@@ -63,7 +86,7 @@ export const getCartItem = createAsyncThunk(
 
 export const emptyCart = createAsyncThunk(
   'cart/emptyCart',
-  async (id, thunkAPI) => {
+  async (id:string, thunkAPI) => {
     const token = await AsyncStorage.getItem('token');
     try {
       const res = await axiosInstance.delete(`/cart/all//${id}`, {
@@ -81,7 +104,7 @@ export const emptyCart = createAsyncThunk(
 
 export const removeSingleProduct = createAsyncThunk(
   'cart/removeItem',
-  async (data, thunkAPI) => {
+  async (data:{id:string,userId:string}, thunkAPI) => {
     const token = await AsyncStorage.getItem('token');
     try {
       const res = await axiosInstance.delete(`cart/${data.id}`, {
@@ -99,10 +122,10 @@ export const removeSingleProduct = createAsyncThunk(
 
 export const incrementItemInCart = createAsyncThunk(
   'cart/incrementItemInCart',
-  async (data, thunkAPI) => {
+  async (data:{id:string,userId:string,quantity:number}, thunkAPI) => {
     const token = await AsyncStorage.getItem('token');
     try {
-      const res = await axiosInstance.put(`cart/${data.id}`,{quantity: data.quantity}, {
+      const res = await axiosInstance.put(`cart/${data.id}`, { quantity: data.quantity }, {
         headers: {
           Authorization: token,
         },
@@ -118,15 +141,7 @@ export const incrementItemInCart = createAsyncThunk(
 
 
 
-const initialState = {
-  product: [],
-  productDetals: [],
-  status: null,
-  isLoader: false,
-  cartItem: [],
-  isAddToCart: false,
-  totalPrice:0
-};
+
 
 const productSlice = createSlice({
   name: 'product',
@@ -141,7 +156,7 @@ const productSlice = createSlice({
     setIsAddToCartFalse: state => {
       state.isAddToCart = false;
     },
-    setTotalPrices: (state,action) => {
+    setTotalPrices: (state, action) => {
       state.totalPrice = action.payload;
     },
   },
@@ -258,6 +273,7 @@ const productSlice = createSlice({
   },
 });
 
-export const {productReset, setIsAddToCartFalse, setIsAddToCartTrue,setTotalPrices} =
+export const { productReset, setIsAddToCartFalse, setIsAddToCartTrue, setTotalPrices } =
   productSlice.actions;
 export default productSlice.reducer;
+
