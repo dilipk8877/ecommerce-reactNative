@@ -1,5 +1,5 @@
-import {FlashList} from '@shopify/flash-list';
-import React, {useEffect, useState} from 'react';
+import { FlashList } from '@shopify/flash-list';
+import React, { useEffect, useState } from 'react';
 import {
   ActivityIndicator,
   Pressable,
@@ -9,14 +9,29 @@ import {
   Modal,
 } from 'react-native';
 import AntDesign from 'react-native-vector-icons/AntDesign';
-import {useDispatch, useSelector} from 'react-redux';
-import {getCategory} from '../../features/categoryListing/CategoryListingSlice';
-import {deleteAddress, getAllAddress, setEditValue} from '../../features/address/AddressSlice';
+import { useDispatch, useSelector } from 'react-redux';
+import { getCategory } from '../../features/categoryListing/CategoryListingSlice';
+import { deleteAddress, getAllAddress, setEditValue } from '../../features/address/AddressSlice';
 import Entypo from 'react-native-vector-icons/Entypo';
 import Header from '../../utils/Header';
-const ShippingAddress = ({navigation}) => {
-  const {address, isLoader} = useSelector(state => state.address);
-  const dispatch = useDispatch();
+import { AppDispatch, RootState } from '../../../store';
+
+interface IShippingAdd {
+  item: {
+    fullName: string,
+    phone: string | number,
+    addressLine1: string,
+    addressLine2: string,
+    postalCode: number,
+    city: string,
+    country: string,
+    state: string,
+    _id: string,
+  }
+}
+const ShippingAddress = ({ navigation }: any) => {
+  const { address, isLoader } = useSelector((state: any) => state.address);
+  const dispatch = useDispatch<AppDispatch>();
 
   useEffect(() => {
     dispatch(getAllAddress());
@@ -24,22 +39,22 @@ const ShippingAddress = ({navigation}) => {
 
 
 
-const handleDelete = (id)=>{
-  dispatch(deleteAddress(id))
-}
+  const handleDelete = (id: string) => {
+    dispatch(deleteAddress(id))
+  }
 
-const handleEdit =(item)=>{
+  const handleEdit = (item:{}) => {
 
-  dispatch(setEditValue(item))
-  setTimeout(()=>{
-    navigation.navigate("AddAddress")
-  },500)
-}
+    dispatch(setEditValue(item))
+    setTimeout(() => {
+      navigation.navigate("AddAddress")
+    }, 500)
+  }
 
-const handleSaveNewAddress = () =>{
-  dispatch(setEditValue(null))
-  navigation.navigate('AddAddress')
-}
+  const handleSaveNewAddress = () => {
+    dispatch(setEditValue(null))
+    navigation.navigate('AddAddress')
+  }
   return (
     <>
       {isLoader ? (
@@ -48,7 +63,7 @@ const handleSaveNewAddress = () =>{
         </View>
       ) : (
         <View style={styles.container}>
-        <Header headerPageText="Shipping Address" />
+          <Header headerPageText="Shipping Address" />
           <View style={styles.newAddressContainer}>
             <Text
               style={styles.newAddressText}
@@ -62,7 +77,7 @@ const handleSaveNewAddress = () =>{
           <FlashList
             data={address?.addresses}
             estimatedItemSize={200}
-            renderItem={item => {
+            renderItem={(item: IShippingAdd) => {
               return (
                 <>
                   <View style={styles.card}>
@@ -93,7 +108,7 @@ const handleSaveNewAddress = () =>{
                       </Pressable>
                     </View>
                   </View>
-                  <View style={{height: 10}}></View>
+                  <View style={{ height: 10 }}></View>
                 </>
               );
             }}
@@ -125,12 +140,12 @@ const styles = StyleSheet.create({
   },
   newAddressText: {
     fontSize: 18,
-    fontWeight: 500,
+    fontWeight: "500",
     color: '#ff6600',
   },
   smallText: {
     fontSize: 13,
-    fontWeight: 500,
+    fontWeight: "500",
     marginTop: 20,
     padding: 20,
     color: '#000',
@@ -149,7 +164,7 @@ const styles = StyleSheet.create({
   cardText: {
     fontSize: 16,
     color: '#000',
-    fontWeight: 400,
+    fontWeight: "400",
   },
   modal: {
     zIndex: 1,
@@ -163,7 +178,7 @@ const styles = StyleSheet.create({
   },
   modalText: {
     color: '#000',
-    fontWeight: 500,
+    fontWeight: "500",
     padding: 5,
     fontSize: 12,
   },

@@ -21,27 +21,27 @@ import jwtDecode from 'jwt-decode';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import {addWishlist} from '../../features/wishlist/WishlistSlice';
 import Header from '../../utils/Header';
+import { AppDispatch, RootState } from '../../../store';
 
-const ProductDeatils = ({navigation}) => {
+
+interface ICheckItemInCart{
+  product:any;
+  // id:string;
+}
+const ProductDeatils = ({navigation}:any) => {
   const {productDetals, isLoader, cartItem} = useSelector(
-    state => state.userProduct,
+    (state:any) => state.userProduct,
   );
-  const {isWishListLoader} = useSelector(state => state.wishlist);
-  const {isLogin} = useSelector(state => state.login);
-  const [userId, setUser] = useState();
+  const {isWishListLoader} = useSelector((state:RootState) => state.wishlist);
+  const {isLogin} = useSelector((state:RootState) => state.login);
+  const [userId, setUser] = useState("");
   const [isProductAvailable, setIsProductAvailable] = useState(false);
-  const [isWishlist, setIsWishlist] = useState(false);
-  const dispatch = useDispatch();
+  const dispatch = useDispatch<AppDispatch>();
 
-  // useEffect(() => {
-  //   setTimeout(()=>{
-  //     dispatch(getProductDetails(userId));
-  //   },1000)
-  // }, []);
 
   const checkItemINCart = () => {
     const temp = cartItem?.filter(
-      item => item.product.id === productDetals?._id,
+      (item:ICheckItemInCart) => item.product?.id === productDetals?._id,
     );
     return temp?.length > 0 ? true : false;
   };
@@ -52,12 +52,12 @@ const ProductDeatils = ({navigation}) => {
 
   const concatenatedURLs =
     productDetals?.images?.length > 0 &&
-    productDetals?.images?.map(item => displayImageUrl + `${item}`);
+    productDetals?.images?.map((item:{item:string}) => displayImageUrl + `${item}`);
 
   const getToken = async () => {
     const token = await AsyncStorage.getItem('token');
     if (token) {
-      const decodedToken = jwtDecode(token);
+      const decodedToken:{id:string} = jwtDecode(token);
       setUser(decodedToken?.id);
     }
   };

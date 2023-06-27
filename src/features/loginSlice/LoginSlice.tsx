@@ -19,14 +19,13 @@ const initialState:IState = {
 
 export const getLogin = createAsyncThunk(
   'login/getLogin',
-  async (data:{data:string}, thunkAPI) => {
+  async (data:any, thunkAPI) => {
     try {
-      const res = await axiosInstance.post('/users/login', data.data);
+      const res = await axiosInstance.post('/users/login', data);
      await AsyncStorage.setItem('token', res.data.token);
      
       return res.data;
     } catch (error:any) {
-      console.log(error)
       return thunkAPI.rejectWithValue(error.response.data);
     }
   },

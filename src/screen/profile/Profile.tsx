@@ -5,21 +5,20 @@ import {Pressable, StyleSheet, Text, ToastAndroid, View} from 'react-native';
 import Feather from 'react-native-vector-icons/Feather';
 import FontAwesome5 from 'react-native-vector-icons/FontAwesome5';
 import AntDesign from 'react-native-vector-icons/AntDesign';
-import {useNavigation} from '@react-navigation/native';
 import {useDispatch, useSelector} from 'react-redux';
 import { logOutUser, setIslogout } from '../../features/loginSlice/LoginSlice';
 import Header from '../../utils/Header';
+import { RootState } from '../../../store';
 
-const Profile = ({navigation}) => {
-  const navigate = useNavigation();
+const Profile = ({navigation}:any) => {
   const dispatch = useDispatch()
-  const [user, setUser] = useState();
-  const {isLogin} = useSelector(state => state.login);
+  const [user, setUser] = useState("");
+  const {isLogin} = useSelector((state:RootState) => state.login);
 
   const getToken = async () => {
     const token = await AsyncStorage.getItem('token');
     if (token) {
-      const decodedToken = jwtDecode(token);
+      const decodedToken:{name:string} = jwtDecode(token);
       setUser(decodedToken?.name);
     }
   };
@@ -30,7 +29,7 @@ const Profile = ({navigation}) => {
 
   const handleLogout = async () => {
     await AsyncStorage.clear();
-    dispatch(setIslogout())
+    dispatch(setIslogout(null))
     dispatch(logOutUser())
     navigation.navigate('CategoryListing');
     ToastAndroid.showWithGravity(
@@ -40,7 +39,7 @@ const Profile = ({navigation}) => {
     );
   };
   const handleWishlist = () => {
-    navigate.navigate('Wishlist');
+    navigation.navigate("Wishlist");
   };
 
   return (
@@ -63,7 +62,7 @@ const Profile = ({navigation}) => {
               <Text style={styles.contentText}>My Orders</Text>
               <Feather name="grid" size={20} color={"black"}/>
             </Pressable>
-            <Pressable style={styles.contentContainer} onPress={handleWishlist}>
+            <Pressable style={styles.contentContainer} onPress={()=>handleWishlist()}>
               <Text style={styles.contentText}>My Wishlist</Text>
               <AntDesign name="heart" size={20} style={styles.wishlistIcon} />
             </Pressable>
@@ -117,7 +116,7 @@ const styles = StyleSheet.create({
   },
   userName: {
     fontSize: 20,
-    fontWeight: 500,
+    fontWeight: "500",
     color: '#000',
   },
   logoutContainer: {
@@ -144,7 +143,7 @@ const styles = StyleSheet.create({
   contentText: {
     fontSize: 18,
     color:"grey",
-    fontWeight: 500,
+    fontWeight: "500",
   },
   contentContainer: {
     flexDirection: 'row',
@@ -171,7 +170,7 @@ const styles = StyleSheet.create({
   },
   accountText: {
     fontSize: 25,
-    fontWeight: 500,
+    fontWeight: "500",
   },
   loginText: {
     fontSize: 16,

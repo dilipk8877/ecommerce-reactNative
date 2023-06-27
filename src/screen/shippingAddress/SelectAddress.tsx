@@ -1,4 +1,4 @@
-import React, {useEffect, useState} from 'react';
+import React, { useEffect, useState } from 'react';
 import {
   Text,
   View,
@@ -7,11 +7,9 @@ import {
   StyleSheet,
   TouchableOpacity,
 } from 'react-native';
-import {useDispatch, useSelector} from 'react-redux';
-import {getAllAddress, setEditValue} from '../../features/address/AddressSlice';
-import AntDesign from 'react-native-vector-icons/AntDesign';
-import {FlashList} from '@shopify/flash-list';
-import {RadioButton} from 'react-native-paper';
+import { useDispatch, useSelector } from 'react-redux';
+import { getAllAddress, setEditValue } from '../../features/address/AddressSlice';
+import { FlashList } from '@shopify/flash-list';
 import {
   createOrder,
   setDeliveredAddress,
@@ -19,19 +17,36 @@ import {
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import jwtDecode from 'jwt-decode';
 import Header from '../../utils/Header';
-const SelectAddress = ({navigation}) => {
-  const {address, isLoader} = useSelector(state => state.address);
-  const {deliveredAddress} = useSelector(state => state.createOrder);
-  const {totalPrice, cartItem} = useSelector(state => state.userProduct);
-  const [selectedOption, setSelectedOption] = useState(null);
-  const [toggle,setToggle] = useState(false);
-  const dispatch = useDispatch();
-  const [userId, setUser] = useState();
+import { AppDispatch, RootState } from '../../../store';
+
+interface IAddressData {
+  item: {
+    fullName: string;
+    addressLine1: string;
+    addressLine2: string;
+    phone: string | number;
+    city: string;
+    country: string;
+    postalCode: string | number;
+    _id: string;
+    state: string;
+  }
+
+}
+
+const SelectAddress = ({ navigation }: any) => {
+  const { address, isLoader } = useSelector((state: any) => state.address);
+  const { deliveredAddress } = useSelector((state: any) => state.createOrder);
+  const { totalPrice, cartItem } = useSelector((state: RootState) => state.userProduct);
+  const [selectedOption, setSelectedOption] = useState<any>();
+  const [toggle, setToggle] = useState(false);
+  const dispatch = useDispatch<AppDispatch>();
+  const [userId, setUser] = useState("");
 
   const getToken = async () => {
     const token = await AsyncStorage.getItem('token');
     if (token) {
-      const decodedToken = jwtDecode(token);
+      const decodedToken: { id: string } = jwtDecode(token);
       setUser(decodedToken?.id);
     }
   };
@@ -43,7 +58,7 @@ const SelectAddress = ({navigation}) => {
     dispatch(getAllAddress());
   }, [toggle]);
 
-  const handleEdit = item => {
+  const handleEdit = (item:{}) => {
     dispatch(setEditValue(item));
     setTimeout(() => {
       navigation.navigate('AddAddress');
@@ -69,7 +84,7 @@ const SelectAddress = ({navigation}) => {
     navigation.navigate('OrderSummary');
   };
 
-  const handleSelectOption = option => {
+  const handleSelectOption = (option: any) => {
     setSelectedOption(option);
     setToggle(!toggle)
     dispatch(setDeliveredAddress(option));
@@ -83,7 +98,7 @@ const SelectAddress = ({navigation}) => {
         </View>
       ) : (
         <View style={styles.container}>
-        <Header headerPageText="Select Address" />
+          <Header headerPageText="Select Address" />
           <View style={styles.newAddressContainer}>
             <Text style={styles.newAddressText} onPress={handleSaveNewAddress}>
               + Add a new Address
@@ -95,12 +110,12 @@ const SelectAddress = ({navigation}) => {
           <FlashList
             data={address?.addresses}
             estimatedItemSize={200}
-            renderItem={item => {
+            renderItem={(item: any) => {
               return (
                 <>
                   <View style={styles.card}>
                     <View style={styles.radioButton}>
-                      <View style={{marginRight: 10}}>
+                      <View style={{ marginRight: 10 }}>
                         <TouchableOpacity
                           style={styles.outer}
                           onPress={() => handleSelectOption(item.item)}>
@@ -132,7 +147,7 @@ const SelectAddress = ({navigation}) => {
                       </Pressable>
                     </View>
                   </View>
-                  <View style={{height: 10}}></View>
+                  <View style={{ height: 10 }}></View>
                 </>
               );
             }}
@@ -143,7 +158,7 @@ const SelectAddress = ({navigation}) => {
                 <Pressable
                   style={styles.CartPageBottom}
                   onPress={() => handleContinueOrder()}>
-                  <Text style={styles.CartPagePlace}>Continue</Text>
+                  <Text>Continue</Text>
                 </Pressable>
               </View>
             </View>
@@ -180,12 +195,12 @@ const styles = StyleSheet.create({
   },
   newAddressText: {
     fontSize: 18,
-    fontWeight: 500,
+    fontWeight: "500",
     color: '#ff6600',
   },
   smallText: {
     fontSize: 13,
-    fontWeight: 500,
+    fontWeight: "500",
     marginTop: 20,
     padding: 20,
     color: '#000',
@@ -205,7 +220,7 @@ const styles = StyleSheet.create({
   cardText: {
     fontSize: 16,
     color: '#000',
-    fontWeight: 400,
+    fontWeight: "400",
   },
   modal: {
     zIndex: 1,
@@ -219,7 +234,7 @@ const styles = StyleSheet.create({
   },
   modalText: {
     color: '#000',
-    fontWeight: 500,
+    fontWeight: "500",
     padding: 5,
     fontSize: 12,
   },

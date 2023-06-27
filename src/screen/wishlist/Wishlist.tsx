@@ -20,11 +20,20 @@ import jwtDecode from 'jwt-decode';
 import {displayImageUrl} from '../../utils/ImageUrl';
 import {getProductDetails} from '../../features/productListing/ProductListingSlice';
 import Header from '../../utils/Header';
+import { AppDispatch, RootState } from '../../../store';
 
-const Wishlist = ({navigation}) => {
-  const {wishList, isWishListLoader} = useSelector(state => state.wishlist);
-  const [userId, setUser] = useState();
-  const dispatch = useDispatch();
+
+interface IWishList {
+  item:{
+    _id:string;
+    thumbnail:string;
+    title:string;
+  }
+}
+const Wishlist = ({navigation}:any) => {
+  const {wishList, isWishListLoader} = useSelector((state:any) => state.wishlist);
+  const [userId, setUser] = useState("");
+  const dispatch = useDispatch<AppDispatch>();
   useEffect(() => {
     dispatch(getWishlist(userId));
   }, [userId]);
@@ -32,7 +41,7 @@ const Wishlist = ({navigation}) => {
   const getToken = async () => {
     const token = await AsyncStorage.getItem('token');
     if (token) {
-      const decodedToken = jwtDecode(token);
+      const decodedToken:{id:string} = jwtDecode(token);
       setUser(decodedToken?.id);
     }
   };
@@ -41,14 +50,18 @@ const Wishlist = ({navigation}) => {
     getToken();
   }, []);
 
-  const handleProductDetails = id => {
+  const handleProductDetails = (id:string) => {
     dispatch(getProductDetails(id));
     navigation.navigate('ProductDeatils');
   };
 
-  const handleRemoveItem = id => {
+  const handleRemoveItem = (id:string) => {
     dispatch(removeItemFromWishlist({id, userId}));
   };
+
+  const handleAddToCart = () =>{
+
+  }
 
   return (
     <>
@@ -71,7 +84,7 @@ const Wishlist = ({navigation}) => {
                 data={wishList?.products}
                 estimatedItemSize={200}
                 numColumns={2}
-                renderItem={item => {
+                renderItem={(item:IWishList) => {
                   return (
                     <TouchableOpacity
                       style={styles.card}

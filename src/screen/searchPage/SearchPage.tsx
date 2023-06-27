@@ -14,11 +14,12 @@ import {useDispatch, useSelector} from 'react-redux';
 import {searchProduct} from '../../features/searchProduct/SearchSlice';
 import {displayImageUrl} from '../../utils/ImageUrl';
 import {getProductDetails} from '../../features/productListing/ProductListingSlice';
-const SearchPage = ({navigation}) => {
-  const {searchList, isLoading} = useSelector(state => state.searchItem);
-  const dispatch = useDispatch();
+import { AppDispatch, RootState } from '../../../store';
+const SearchPage = ({navigation}:any) => {
+  const {searchList, isLoading} = useSelector((state:RootState) => state.searchItem);
+  const dispatch = useDispatch<AppDispatch>();
 
-  const handleProductDetails = id => {
+  const handleProductDetails = (id:string) => {
     dispatch(getProductDetails(id));
     navigation.navigate('ProductDeatils');
   };

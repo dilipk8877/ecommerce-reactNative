@@ -4,13 +4,10 @@ import AsyncStorage from '@react-native-async-storage/async-storage';
 import { ToastAndroid } from 'react-native';
 
 interface IUserData {
-  userData: {
-    name: string,
-    phone: number,
-    email: string,
-    password: string
-  },
-  navigation: any,
+  name: string,
+  phone: number | string,
+  email: string,
+  password: string
 }
 
 interface IState {
@@ -25,7 +22,7 @@ const initialState: IState = {
 
 export const getSignup = createAsyncThunk(
   'signup/getSignup',
-  async (data: IUserData, thunkAPI) => {
+  async (data: { userData: IUserData, navigation: any }, thunkAPI) => {
     try {
       const res = await axiosInstance.post(
         '/users/register',

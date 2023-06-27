@@ -21,13 +21,14 @@ import {
 import {FlashList} from '@shopify/flash-list';
 import {displayImageUrl} from '../../utils/ImageUrl';
 import Header from '../../utils/Header';
-const ProductListing = ({navigation}) => {
-  const {product, isLoader} = useSelector(state => state.userProduct);
+import { AppDispatch, RootState } from '../../../store';
+const ProductListing = ({navigation}:any) => {
+  const {product, isLoader} = useSelector((state:RootState) => state.userProduct);
   const [heart, setHeart] = useState(false);
-  const dispatch = useDispatch();
+  const dispatch = useDispatch<AppDispatch>();
 
   useEffect(() => {
-    dispatch(getProduct());
+    // dispatch(getProduct());
     return () => {
       dispatch(productReset());
     };
@@ -37,7 +38,7 @@ const ProductListing = ({navigation}) => {
     setHeart(!heart);
   };
 
-  const handleProductDetails = id => {
+  const handleProductDetails = (id:string) => {
     dispatch(getProductDetails(id));
     navigation.navigate('ProductDeatils');
   };
@@ -204,7 +205,7 @@ const styles = StyleSheet.create({
   },
   CategoryDetailsBrand: {
     color: '#6b6f75',
-    fontWeight: 500,
+    fontWeight: "500",
   },
   ratingContainer: {
     width: 40,

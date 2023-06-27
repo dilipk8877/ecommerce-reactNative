@@ -1,18 +1,15 @@
 import jwtDecode from 'jwt-decode';
-import React, {useEffect, useState} from 'react';
+import React, { useEffect, useState } from 'react';
 import {
   ActivityIndicator,
   Image,
   Pressable,
-  ScrollView,
   StyleSheet,
   Text,
-  TextInput,
   TouchableOpacity,
   View,
 } from 'react-native';
-import AntDesign from 'react-native-vector-icons/AntDesign';
-import {useDispatch, useSelector} from 'react-redux';
+import { useDispatch, useSelector } from 'react-redux';
 import {
   emptyCart,
   getCartItem,
@@ -22,34 +19,46 @@ import {
   setTotalPrices,
 } from '../../features/productListing/ProductListingSlice';
 import AsyncStorage from '@react-native-async-storage/async-storage';
-import {FlashList} from '@shopify/flash-list';
+import { FlashList } from '@shopify/flash-list';
 import UserNotLogin from './UserNotLogin';
-import {displayImageUrl} from '../../utils/ImageUrl';
+import { displayImageUrl } from '../../utils/ImageUrl';
 import FontAwesome from 'react-native-vector-icons/FontAwesome';
 import Header from '../../utils/Header';
 import { CartImage } from '../../assets';
-const CartPage = ({navigation}) => {
-  const {isLoader, cartItem} = useSelector(state => state.userProduct);
-  const {isLogin} = useSelector(state => state.login);
-  const [totalPrice, setTotalPrice] = useState(0);
-  const dispatch = useDispatch();
-  const [userId, setUser] = useState();
+import { AppDispatch, RootState } from '../../../store';
+
+interface CartItem {
+  product: {
+    price: number;
+    quantity: number;
+    thumbnail: string;
+    title: string;
+  };
+  id: string;
+}
+
+const CartPage: React.FC<{ navigation: any }> = ({ navigation }) => {
+  const { isLoader, cartItem } = useSelector((state: RootState) => state.userProduct);
+  const { isLogin } = useSelector((state: RootState) => state.login);
+  const [totalPrice, setTotalPrice] = useState<number>(0);
+  const dispatch = useDispatch<AppDispatch>();
+  const [userId, setUserId] = useState("");
+
   const getToken = async () => {
     const token = await AsyncStorage.getItem('token');
     if (token) {
-      const decodedToken = jwtDecode(token);
-      setUser(decodedToken?.id);
+      const decodedToken: { id: string } = jwtDecode(token);
+      setUserId(decodedToken?.id);
     }
   };
+
   useEffect(() => {
     getToken();
   }, []);
 
-
   useEffect(() => {
     dispatch(getCartItem(userId));
   }, [userId]);
-
 
   useEffect(() => {
     calculateTotalPrice();
@@ -57,42 +66,38 @@ const CartPage = ({navigation}) => {
 
   const calculateTotalPrice = () => {
     let price = 0;
-    cartItem?.forEach(item => {
+    cartItem?.forEach((item: CartItem) => {
       price += item.product.price * item.product.quantity;
     });
     setTotalPrice(price);
   };
 
-  const handleSingleItemRemove = id => {
-    dispatch(removeSingleProduct({id, userId}));
+  const handleSingleItemRemove = (id: string) => {
+    dispatch(removeSingleProduct({ id, userId }));
   };
 
-  const handleOpenProductDetail = id => {
-    dispatch(getProductDetails(id));
-    navigation.navigate('ProductDeatils');
-  };
 
   const handleEmptyCart = () => {
     dispatch(emptyCart(userId));
   };
 
   const handlePlaceOrder = () => {
-    dispatch(setTotalPrices(totalPrice))
+    dispatch(setTotalPrices(totalPrice));
     navigation.navigate('SelectAddress');
-
   };
 
-  const handleIncrementItem = data => {
+  const handleIncrementItem = (data: { id: string; quantity: number }) => {
     dispatch(
-      incrementItemInCart({id:data.id, quantity:data.quantity +1,userId}),
+      incrementItemInCart({ id: data.id, quantity: data.quantity + 1, userId })
     );
   };
 
-  const handleDecrementItem = data => {
+  const handleDecrementItem = (data: { id: string; quantity: number }) => {
     dispatch(
-      incrementItemInCart({id:data.id, quantity:data.quantity -1,userId}),
+      incrementItemInCart({ id: data.id, quantity: data.quantity - 1, userId })
     );
   };
+
   return (
     <>
       {isLoader ? (
@@ -101,14 +106,15 @@ const CartPage = ({navigation}) => {
         </View>
       ) : (
         <View style={styles.container}>
-        <Header headerPageText="Your Cart" />
+          <Header headerPageText="Your Cart" />
           {isLogin ? (
             <>
               {cartItem?.length > 0 ? (
                 <View style={styles.emptyButtonContainer}>
                   <Pressable
                     style={styles.emptyButton}
-                    onPress={() => handleEmptyCart()}>
+                    onPress={() => handleEmptyCart()}
+                  >
                     <Text style={styles.emptyButtonText}>Empty cart</Text>
                   </Pressable>
                 </View>
@@ -117,31 +123,29 @@ const CartPage = ({navigation}) => {
                 <FlashList
                   data={cartItem}
                   estimatedItemSize={200}
-                  renderItem={item => {
+                  renderItem={({ item }: { item: CartItem }) => {
                     return (
                       <TouchableOpacity
                         style={styles.cartProductList}
-                        // onPress={() => handleOpenProductDetail(item.item.id)}
+                        // onPress={() => handleOpenProductDetail(item.id)}
                       >
                         <View>
                           <Image
                             source={{
-                              uri:
-                                displayImageUrl + item.item.product.thumbnail,
+                              uri: displayImageUrl + item.product.thumbnail,
                             }}
                             style={styles.cartImage}
                           />
                           <Text
                             style={styles.cartRemove}
-                            onPress={() =>
-                              handleSingleItemRemove(item.item.id)
-                            }>
+                            onPress={() => handleSingleItemRemove(item.id)}
+                          >
                             Remove
                           </Text>
                         </View>
                         <View style={styles.productDetails}>
                           <Text style={styles.cartName}>
-                            {item?.item.product?.title}
+                            {item?.product?.title}
                           </Text>
                           <View style={styles.counterContainer}>
                             <Pressable style={styles.IncDecIcon}>
@@ -149,16 +153,17 @@ const CartPage = ({navigation}) => {
                                 style={styles.IncDecIconText}
                                 onPress={() =>
                                   handleDecrementItem({
-                                    id: item.item.id,
-                                    quantity: item.item.quantity,
+                                    id: item.id,
+                                    quantity: item.product.quantity,
                                   })
-                                }>
+                                }
+                              >
                                 -
                               </Text>
                             </Pressable>
                             <View style={styles.cartInput}>
-                              <Text style={{fontSize: 18, color: 'black'}}>
-                                {item?.item?.product?.quantity}
+                              <Text style={{ fontSize: 18, color: 'black' }}>
+                                {item?.product?.quantity}
                               </Text>
                             </View>
                             <Pressable style={styles.IncDecIcon}>
@@ -166,10 +171,11 @@ const CartPage = ({navigation}) => {
                                 style={styles.IncDecIconText}
                                 onPress={() =>
                                   handleIncrementItem({
-                                    id: item.item.id,
-                                    quantity: item.item.quantity,
+                                    id: item.id,
+                                    quantity: item.product.quantity,
                                   })
-                                }>
+                                }
+                              >
                                 +
                               </Text>
                             </Pressable>
@@ -181,21 +187,18 @@ const CartPage = ({navigation}) => {
                 />
               ) : (
                 <View style={styles.emptyCart}>
-                  {/* <Image
-                    source={require('../../assets/image/png-transparent-empty-cart-illustration-thumbnail-removebg-preview.png')}
-                    style={styles.CartImage}
-                  /> */}
-                  <CartImage  style={styles.CartImage}/>
+                  <CartImage style={styles.CartImage} />
                   <Text style={styles.emptyCartText}>Your Cart is Empty</Text>
                   <Text
                     style={styles.emptyCartLink}
-                    onPress={() => navigation.navigate('CategoryListing')}>
+                    onPress={() => navigation.navigate('CategoryListing')}
+                  >
                     Continue to shopping
                   </Text>
                 </View>
               )}
 
-              <View style={{height: 53}}></View>
+              <View style={{ height: 53 }}></View>
               {cartItem?.length > 0 ? (
                 <View style={styles.cartBottom}>
                   <Text style={styles.cartPrice}>
@@ -205,7 +208,8 @@ const CartPage = ({navigation}) => {
                   </Text>
                   <Pressable
                     style={styles.CartPageBottom}
-                    onPress={() => handlePlaceOrder()}>
+                    onPress={() => handlePlaceOrder()}
+                  >
                     <Text style={styles.CartPagePlace}>Place Order</Text>
                   </Pressable>
                 </View>
@@ -231,7 +235,6 @@ const styles = StyleSheet.create({
     fontSize: 25,
     color: 'black',
   },
-
   emptyCartLink: {
     color: '#4285F4',
     fontSize: 18,
@@ -259,7 +262,6 @@ const styles = StyleSheet.create({
   productDetails: {
     marginLeft: 10,
   },
-
   cartBottom: {
     flexDirection: 'row',
     justifyContent: 'space-between',
@@ -272,14 +274,12 @@ const styles = StyleSheet.create({
   },
   cartProductList: {
     flexDirection: 'row',
-    // justifyContent: 'space-between',
     alignItems: 'center',
     width: '100%',
     padding: 10,
     backgroundColor: '#fff',
     margin: 5,
     borderRadius: 5,
-    // marginBottom:50
   },
   cartPrice: {
     color: '#000',
@@ -317,7 +317,6 @@ const styles = StyleSheet.create({
   },
   counterContainer: {
     flexDirection: 'row',
-    // justifyContent: 'space-between',
     alignItems: 'center',
   },
   IncDecIcon: {

@@ -1,8 +1,5 @@
 import { createAsyncThunk, createSlice } from "@reduxjs/toolkit";
 import { axiosInstance } from "../../utils/AxiosInstance";
-interface SearchProductData {
-    title: string;
-}
 
 interface ISearchState {
     searchList: any[],
@@ -13,7 +10,7 @@ const initialState: ISearchState = {
     isLoading: false,
 }
 
-export const searchProduct = createAsyncThunk("seach/searchProduct", async (data: SearchProductData, thunkAPI) => {
+export const searchProduct = createAsyncThunk("seach/searchProduct", async (data: string, thunkAPI) => {
     try {
         const res = await axiosInstance.get(`/products/search?title=${data}`)
         return res.data

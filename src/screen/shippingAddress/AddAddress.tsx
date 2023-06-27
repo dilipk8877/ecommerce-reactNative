@@ -12,9 +12,10 @@ import {
 import {useDispatch, useSelector} from 'react-redux';
 import {addAddress, updateAddress} from '../../features/address/AddressSlice';
 import Header from '../../utils/Header';
-const AddAddress = ({navigation}) => {
-  const dispatch = useDispatch();
-  const {isLoader, preFieldValue} = useSelector(state => state.address);
+import { AppDispatch, RootState } from '../../../store';
+const AddAddress = ({navigation}:any) => {
+  const dispatch = useDispatch<AppDispatch>();
+  const {isLoader, preFieldValue} = useSelector((state:any) => state.address);
   const [address, setAddress] = useState({
     fullName: preFieldValue?.fullName ? preFieldValue?.fullName : '',
     addressLine1: preFieldValue?.addressLine1
@@ -30,9 +31,10 @@ const AddAddress = ({navigation}) => {
     phone: preFieldValue?.phone ? preFieldValue?.phone : '',
   });
 
-  const handleInputChange = (fieldName, value) => {
+  const handleInputChange = (fieldName:string, value:string) => {
     setAddress({...address, [fieldName]: value});
   };
+  
   const handleSaveAddress = () => {
     dispatch(addAddress({address, navigation}));
   };
@@ -174,7 +176,7 @@ const styles = StyleSheet.create({
   },
   button: {
     fontSize: 20,
-    fontWeight: 500,
+    fontWeight: "500",
     color: 'white',
   },
 });

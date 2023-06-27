@@ -17,9 +17,10 @@ import {getSignup} from '../../features/signupSlice/SignupSlice';
 import {useFormik} from 'formik';
 
 import * as Yup from 'yup';
-const SignupPage = ({navigation}) => {
-  const {isLoader} = useSelector(state => state.signup);
-  const dispatch = useDispatch();
+import { AppDispatch, RootState } from '../../../store';
+const SignupPage = ({navigation}:any) => {
+  const {isLoader} = useSelector((state:RootState) => state.signup);
+  const dispatch = useDispatch<AppDispatch>();
   const phoneRegExp =
     /^((\\+[1-9]{1,4}[ \\-]*)|(\\([0-9]{2,3}\\)[ \\-]*)|([0-9]{2,4})[ \\-]*)*?[0-9]{3,4}?[ \\-]*[0-9]{3,4}?$/;
   const {

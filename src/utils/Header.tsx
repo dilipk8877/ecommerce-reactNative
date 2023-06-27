@@ -4,10 +4,10 @@ import {View, Text, StyleSheet} from 'react-native';
 import AntDesign from 'react-native-vector-icons/AntDesign';
 import { useDispatch } from 'react-redux';
 import { searchProduct } from '../features/searchProduct/SearchSlice';
+import { AppDispatch } from '../../store';
 
-const Header = ({headerPageText}) => {
-  const dispatch = useDispatch()
-  const navigation = useNavigation();
+const Header = ({headerPageText,navigation}:any) => {
+  const dispatch = useDispatch<AppDispatch>()
   const handleSearch = () =>{
     dispatch(searchProduct(''))
     navigation.navigate('SearchPage')

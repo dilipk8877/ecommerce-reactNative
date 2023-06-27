@@ -5,7 +5,7 @@ import { ToastAndroid } from 'react-native';
 
 interface ProductIntialState {
   product: any[],
-  productDetals: any[],
+  productDetals: [],
   status: string | null,
   isLoader: boolean,
   cartItem: any[],
@@ -23,11 +23,16 @@ const initialState: ProductIntialState = {
   totalPrice: 0
 };
 
-
+interface IAddToCart {
+  user: string,
+  seller: null,
+  quantity: number,
+  product: any[],
+}
 
 export const getProduct = createAsyncThunk(
   'product/getProduct',
-  async (id, thunkAPI) => {
+  async (id:string, thunkAPI) => {
     try {
       const res = await axiosInstance.get(`/category/${id}`);
       return res.data;
@@ -57,7 +62,7 @@ export const getProductDetails = createAsyncThunk(
 
 export const addToCart = createAsyncThunk(
   'add/addToCard',
-  async (data, thunkAPI) => {
+  async (data:IAddToCart, thunkAPI) => {
     const token = await AsyncStorage.getItem('token');
     try {
       const res = await axiosInstance.post('/cart/add', data, {

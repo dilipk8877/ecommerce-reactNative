@@ -23,7 +23,6 @@ export const axiosInstance = axios.create({
 
 export  const authHeader = async()=>{
     const token =await AsyncStorage.getItem('token')
-    console.log("objecsrfdst", token)
     return {headers: {
         'Authorization': `Bearer ${token}`,
         Accept: "application/json",

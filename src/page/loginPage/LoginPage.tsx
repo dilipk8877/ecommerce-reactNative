@@ -25,10 +25,11 @@ import {getProductDetails} from '../../features/productListing/ProductListingSli
 import {useFormik} from 'formik';
 
 import * as Yup from 'yup';
-const LoginPage = ({navigation}) => {
-  const route = useRoute();
-  const dispatch = useDispatch();
-  const {isLogin, status, isLoader} = useSelector(state => state.login);
+import { AppDispatch, RootState } from '../../../store';
+const LoginPage = ({navigation}:any) => {
+  const route = useRoute<any>();
+  const dispatch = useDispatch<AppDispatch>();
+  const {isLogin, status, isLoader} = useSelector((state:RootState) => state.login);
 
   const {values, handleChange, handleSubmit, touched, errors} = useFormik({
     initialValues: {
@@ -39,8 +40,8 @@ const LoginPage = ({navigation}) => {
       email: Yup.string().email().required('Please enter your email'),
       password: Yup.string().required('Please enter your password'),
     }),
-    onSubmit: (data, action) => {
-      dispatch(getLogin({data, action}));
+    onSubmit: (data) => {
+      dispatch(getLogin(data));
     },
   });
 

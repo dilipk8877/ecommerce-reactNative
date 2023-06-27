@@ -1,6 +1,7 @@
 import React, {useEffect, useState} from 'react';
 import {
   ActivityIndicator,
+  Alert,
   Image,
   Pressable,
   ScrollView,
@@ -9,7 +10,7 @@ import {
   TouchableOpacity,
   View,
 } from 'react-native';
-import AntDesign from 'react-native-vector-icons/AntDesign';
+
 import {
   emptyCart,
   getCartItem,
@@ -24,19 +25,32 @@ import FontAwesome from 'react-native-vector-icons/FontAwesome';
 import RazorpayCheckout from 'react-native-razorpay';
 import {updateOrder} from '../../features/address/CreateOrderSlice';
 import Header from '../../utils/Header';
-const OrderSummary = ({navigation}) => {
-  const dispatch = useDispatch();
+import { AppDispatch, RootState } from '../../../store';
+
+interface IOrderSummary {
+  product: {
+    price: number;
+    thumbnail: string;
+    rating: number;
+    title: string;
+  };
+  quantity: number;
+  id: string;
+}
+
+const OrderSummary = ({navigation}:any) => {
+  const dispatch = useDispatch<AppDispatch>();
   // const [totalPrice, setTotalPrice] = useState(0);
-  const {totalPrice, cartItem} = useSelector(state => state.userProduct);
+  const {totalPrice, cartItem} = useSelector((state:RootState) => state.userProduct);
   const {deliveredAddress, orderId, loading} = useSelector(
-    state => state.createOrder,
+    (state:any) => state.createOrder,
   );
-  const [user, setUser] = useState();
+  const [userId, setUser] = useState("");
   const getToken = async () => {
     const token = await AsyncStorage.getItem('token');
     if (token) {
-      const decodedToken = jwtDecode(token);
-      setUser(decodedToken);
+      const decodedToken:{id:string} = jwtDecode(token);
+      setUser(decodedToken?.id);
     }
   };
 
@@ -45,8 +59,8 @@ const OrderSummary = ({navigation}) => {
   }, []);
 
   useEffect(() => {
-    dispatch(getCartItem(user?.id));
-  }, [user]);
+    dispatch(getCartItem(userId));
+  }, [userId]);
 
   const handlePlaceOrder = () => {
     var options = {
@@ -63,10 +77,10 @@ const OrderSummary = ({navigation}) => {
       theme: {color: '#ff6600'},
     };
     RazorpayCheckout.open(options)
-      .then(data => {
+      .then((data:any) => {
         dispatch(
           updateOrder({
-            userId: user?.id,
+            userId: userId,
             address: deliveredAddress,
             totalAmount: totalPrice,
             status: 'pending',
@@ -74,13 +88,13 @@ const OrderSummary = ({navigation}) => {
             testMode: true,
           }),
         );
-        dispatch(emptyCart(user?.id));
+        dispatch(emptyCart(userId));
         navigation.navigate('CategoryListing');
-        alert('Payment Successful');
+       Alert.alert('Payment Successful');
       })
-      .catch(error => {
+      .catch((error:any) => {
         // handle failure
-        alert(`Error: ${error.code} | ${error.description}`);
+        Alert.alert(`Error: ${error.code} | ${error.description}`);
       });
   };
 
@@ -127,13 +141,13 @@ const OrderSummary = ({navigation}) => {
               <FlashList
                 data={cartItem}
                 estimatedItemSize={200}
-                renderItem={item => {
+                renderItem={({item}:{item:IOrderSummary} )=> {
                   return (
                     <TouchableOpacity style={styles.cartProductList}>
                       <View>
                         <Image
                           source={{
-                            uri: displayImageUrl + item.item.product.thumbnail,
+                            uri: displayImageUrl + item.product.thumbnail,
                           }}
                           style={styles.cartImage}
                         />
@@ -147,17 +161,17 @@ const OrderSummary = ({navigation}) => {
                       </View>
                       <View style={styles.productDetails}>
                         <Text style={styles.cartName}>
-                          {item?.item.product?.title}
+                          {item.product?.title}
                         </Text>
-                        <View style={styles.counterContainer}>
+                        <View>
                           <Text style={styles.counterQuantity}>
-                            quantity: {item.item.quantity}
+                            quantity: {item.quantity}
                           </Text>
                           <View style={styles.ratingContainer}>
                             <StarRating
                               disabled={true}
                               maxStars={5}
-                              rating={item.item.product.rating}
+                              rating={item.product.rating}
                               fullStarColor={'green'}
                               starSize={20}
                             />
@@ -219,7 +233,7 @@ const styles = StyleSheet.create({
   shippingHeaderText: {
     color: '#000',
     fontSize: 18,
-    fontWeight: 500,
+    fontWeight: "500",
   },
   shippingButton: {
     borderWidth: 1,
@@ -233,7 +247,7 @@ const styles = StyleSheet.create({
   shippingButtonText: {
     padding: 2,
     color: '#ff6600',
-    fontWeight: 500,
+    fontWeight: "500",
     fontSize: 16,
   },
   shippingWrap: {
@@ -241,18 +255,18 @@ const styles = StyleSheet.create({
   },
   userName: {
     fontSize: 18,
-    fontWeight: 500,
+    fontWeight: "500",
     color: '#000',
     marginBottom: 5,
   },
   addresss: {
     fontSize: 17,
-    fontWeight: 400,
+    fontWeight: "400",
     color: '#000',
   },
   phoneNumber: {
     fontSize: 17,
-    fontWeight: 400,
+    fontWeight: "400",
     color: '#000',
     marginTop: 5,
   },

@@ -8,7 +8,7 @@ export interface AddressState {
   isLoader: boolean;
   // address:Array;
   status: String,
-  preFieldValue: null,
+  preFieldValue: string | [],
   address:{
     fullName: String,
     addressLine1: String,
@@ -27,7 +27,7 @@ const initialState: AddressState = {
   address:[],
   isLoader: false,
   status: "",
-  preFieldValue: null,
+  preFieldValue: "",
 };
 
 interface AddressSlice {
@@ -97,7 +97,7 @@ export const addAddress = createAsyncThunk(
 
 export const deleteAddress = createAsyncThunk(
   'address/deleteAddress',
-  async (id, thunkAPI) => {
+  async (id:string, thunkAPI) => {
     const token = await AsyncStorage.getItem('token');
     try {
       const res = await axiosInstance.delete(`/address/${id}`, {

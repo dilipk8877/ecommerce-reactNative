@@ -1,7 +1,7 @@
 import React from 'react';
 import {Button, Image, Pressable, StyleSheet, Text, View} from 'react-native';
 
-const UserNotLogin = ({navigation}) => {
+const UserNotLogin = ({navigation}:any) => {
   return (
     <View style={styles.conatiner}>
       <Image
