@@ -5,7 +5,7 @@ import Profile from '../../screen/profile/Profile';
 import CustomDrawer from './CustomDrawer/CustomDrawer';
 
 const Drawer = createDrawerNavigator();
-const DrawerNavigator = ({navigation}) => {
+const DrawerNavigator = () => {
   return (
     <Drawer.Navigator
       drawerContent={props => <CustomDrawer {...props} />}

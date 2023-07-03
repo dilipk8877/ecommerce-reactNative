@@ -38,7 +38,7 @@ const OrderSection = ({ navigation }: any) => {
           <ActivityIndicator size="large" color="#ff6600" />
         </View>
       ) : (<View style={styles.container}>
-        <Header headerPageText="My Orders" />
+        <Header headerPageText="My Orders" navigation={navigation} />
         {isLogin ? (
           <View style={styles.cardContainer}>
             {orderList?.length > 0 ?

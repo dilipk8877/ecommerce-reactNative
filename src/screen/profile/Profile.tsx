@@ -31,7 +31,7 @@ const Profile = ({navigation}:any) => {
     await AsyncStorage.clear();
     dispatch(setIslogout(null))
     dispatch(logOutUser())
-    navigation.navigate('CategoryListing');
+    navigation.navigate('HomeScreen');
     ToastAndroid.showWithGravity(
       'Logout successfully',
       ToastAndroid.SHORT,
@@ -44,7 +44,7 @@ const Profile = ({navigation}:any) => {
 
   return (
     <View style={styles.container}>
-        <Header headerPageText="My Profile" />
+        <Header headerPageText="My Profile" navigation={navigation} />
       {isLogin  ? (
         <View style={styles.profileSection}>
           <Text style={styles.userName}>Hey! {user}</Text>

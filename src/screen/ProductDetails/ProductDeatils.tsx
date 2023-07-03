@@ -45,7 +45,7 @@ const ProductDeatils = ({navigation}:any) => {
     );
     return temp?.length > 0 ? true : false;
   };
-
+console.log("productDetals",productDetals)
   useEffect(() => {
     setIsProductAvailable(checkItemINCart);
   }, [checkItemINCart]);
@@ -108,7 +108,7 @@ const ProductDeatils = ({navigation}:any) => {
         </View>
       ) : (
         <View style={styles.container}>
-          <Header headerPageText="Product Details" />
+          <Header headerPageText="Product Details" navigation={navigation} />
           <View style={styles.wishlistConatiner}>
             {isWishListLoader ? (
               <View>

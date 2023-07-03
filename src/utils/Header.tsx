@@ -25,7 +25,7 @@ const Header = ({headerPageText,navigation}:any) => {
       <View>
         <Text style={styles.headerText}>{headerPageText}</Text>
       </View>
-      {headerPageText === 'Category Page' && (
+      {headerPageText === 'Home Page' && (
         <View style={styles.searchIcon}>
           <AntDesign
             name="search1"

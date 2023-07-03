@@ -71,7 +71,7 @@ const Wishlist = ({navigation}:any) => {
         </View>
       ) : (
         <View style={styles.container}>
-        <Header headerPageText="Wishlist" />
+        <Header headerPageText="Wishlist" navigation={navigation} />
           <View
             style={{
               borderBottomColor: 'black',

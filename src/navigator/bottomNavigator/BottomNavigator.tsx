@@ -10,17 +10,18 @@ import AsyncStorage from '@react-native-async-storage/async-storage';
 import jwtDecode from 'jwt-decode';
 import {getCartItem} from '../../features/productListing/ProductListingSlice';
 import Parent from '../Parent/Parent';
+import { AppDispatch, RootState } from '../../../store';
 
 const Tab = createBottomTabNavigator();
-const BottomNavigator = ({navigation}) => {
-  const {isLoader, cartItem} = useSelector(state => state.userProduct);
-  const {isLogin} = useSelector(state => state.login);
-  const dispatch = useDispatch();
-  const [userId, setUser] = useState();
+const BottomNavigator = ({navigation}:any) => {
+  const {isLoader, cartItem} = useSelector((state:RootState) => state.userProduct);
+  const {isLogin} = useSelector((state:RootState) => state.login);
+  const dispatch = useDispatch<AppDispatch>();
+  const [userId, setUser] = useState("");
   const getToken = async () => {
     const token = await AsyncStorage.getItem('token');
     if (token) {
-      const decodedToken = jwtDecode(token);
+      const decodedToken:{id:string} = jwtDecode(token);
       setUser(decodedToken?.id);
     }
   };
@@ -45,7 +46,7 @@ const BottomNavigator = ({navigation}) => {
                 name="list"
                 size={20}
                 color={'black'}
-                onPress={() => navigation.navigate('CategoryListing')}
+                onPress={() => navigation.navigate('HomeScreen')}
               />
             );
           },

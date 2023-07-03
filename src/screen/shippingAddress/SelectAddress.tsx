@@ -98,7 +98,7 @@ const SelectAddress = ({ navigation }: any) => {
         </View>
       ) : (
         <View style={styles.container}>
-          <Header headerPageText="Select Address" />
+          <Header headerPageText="Select Address" navigation={navigation} />
           <View style={styles.newAddressContainer}>
             <Text style={styles.newAddressText} onPress={handleSaveNewAddress}>
               + Add a new Address
@@ -158,7 +158,7 @@ const SelectAddress = ({ navigation }: any) => {
                 <Pressable
                   style={styles.CartPageBottom}
                   onPress={() => handleContinueOrder()}>
-                  <Text>Continue</Text>
+                  <Text style={styles.CartPagePlace}>Continue</Text>
                 </Pressable>
               </View>
             </View>
@@ -273,5 +273,10 @@ const styles = StyleSheet.create({
     height: 15,
     borderRadius: 15,
     backgroundColor: 'black',
+  },
+  CartPagePlace: {
+    color: '#ffffff',
+    fontSize: 18,
+    fontWeight: '400',
   },
 });

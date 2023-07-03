@@ -63,7 +63,7 @@ const ShippingAddress = ({ navigation }: any) => {
         </View>
       ) : (
         <View style={styles.container}>
-          <Header headerPageText="Shipping Address" />
+          <Header headerPageText="Shipping Address" navigation={navigation} />
           <View style={styles.newAddressContainer}>
             <Text
               style={styles.newAddressText}

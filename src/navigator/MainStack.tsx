@@ -6,15 +6,15 @@ import LoginPage from '../page/loginPage/LoginPage';
 import SignupPage from '../page/signupPage/SignupPage';
 import BottomNavigator from './bottomNavigator/BottomNavigator';
 import {useSelector} from 'react-redux';
-import Parent from './Parent/Parent';
+import { RootState } from '../../store';
 const Stack = createNativeStackNavigator();
 const MainStack = () => {
-  const [userId, setUser] = useState();
-  const {isLogin} = useSelector(state => state.login);
+  const [userId, setUser] = useState("");
+  const {isLogin} = useSelector((state:RootState) => state.login);
   const getToken = async () => {
     const token = await AsyncStorage.getItem('token');
     if (token) {
-      const decodedToken = jwtDecode(token);
+      const decodedToken:{id:string} = jwtDecode(token);
       setUser(decodedToken?.id);
     }
   };

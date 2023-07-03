@@ -39,6 +39,7 @@ const ProductListing = ({navigation}:any) => {
   };
 
   const handleProductDetails = (id:string) => {
+    console.log("prod", id);
     dispatch(getProductDetails(id));
     navigation.navigate('ProductDeatils');
   };
@@ -50,7 +51,7 @@ const ProductListing = ({navigation}:any) => {
         </View>
       ) : (
         <View style={styles.container}>
-        <Header headerPageText="Product Page" />
+        <Header headerPageText="Product Page" navigation={navigation} />
 
           <View style={styles.cardContainer}>
             <FlashList

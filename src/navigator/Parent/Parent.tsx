@@ -1,6 +1,5 @@
 import React from 'react';
 import {createNativeStackNavigator} from '@react-navigation/native-stack';
-import CategoryListing from '../../screen/categoryListing/CategoryListing';
 import ProductListing from '../../screen/ProductListing/ProductListing';
 import ProductDeatils from '../../screen/ProductDetails/ProductDeatils';
 import Wishlist from '../../screen/wishlist/Wishlist';
@@ -10,13 +9,14 @@ import AddAddress from '../../screen/shippingAddress/AddAddress';
 import OrderSummary from '../../screen/cartPage/OrderSummary';
 import SelectAddress from '../../screen/shippingAddress/SelectAddress';
 import SearchPage from '../../screen/searchPage/SearchPage';
+import HomeScreen from '../../screen/categoryListing/HomeScreen';
 const Stack = createNativeStackNavigator();
 const Parent = () => {
   return (
     <Stack.Navigator>
       <Stack.Screen
-        name="CategoryListing"
-        component={CategoryListing}
+        name="HomeScreen"
+        component={HomeScreen}
         options={{headerShown: false}}
       />
       <Stack.Screen

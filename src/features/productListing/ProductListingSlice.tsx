@@ -10,12 +10,19 @@ interface ProductIntialState {
   isLoader: boolean,
   cartItem: any[],
   isAddToCart: boolean,
-  totalPrice: number
+  totalPrice: number,
+  allProduct: any[],
 }
-
+interface IAddToCart {
+  user: string,
+  seller: null,
+  quantity: number,
+  product: any[],
+}
 const initialState: ProductIntialState = {
   product: [],
   productDetals: [],
+  allProduct:[],
   status: null,
   isLoader: false,
   cartItem: [],
@@ -23,12 +30,20 @@ const initialState: ProductIntialState = {
   totalPrice: 0
 };
 
-interface IAddToCart {
-  user: string,
-  seller: null,
-  quantity: number,
-  product: any[],
-}
+
+
+
+export const getAllProduct = createAsyncThunk(
+  'product/allProduct',
+  async (_, thunkAPI) => {
+    try {
+      const res = await axiosInstance.get("products");
+      return res.data;
+    } catch (error) {
+      return thunkAPI.rejectWithValue(error);
+    }
+  },
+);
 
 export const getProduct = createAsyncThunk(
   'product/getProduct',
@@ -52,8 +67,10 @@ export const getProductDetails = createAsyncThunk(
           Authorization: token,
         },
       });
+      console.log("response",res.data)
       return res.data;
     } catch (error) {
+      console.log("objecterror",error)
       return thunkAPI.rejectWithValue(error);
     }
   },
@@ -179,6 +196,19 @@ const productSlice = createSlice({
         state.status = 'rejected';
         state.isLoader = false;
       });
+      builder.addCase(getAllProduct.pending, state => {
+        state.status = 'pending';
+        state.isLoader = true;
+      }),
+        builder.addCase(getAllProduct.fulfilled, (state, action) => {
+          state.status = 'fulfilled';
+          state.allProduct = action.payload?.products;
+          state.isLoader = false;
+        }),
+        builder.addCase(getAllProduct.rejected, (state, action) => {
+          state.status = 'rejected';
+          state.isLoader = false;
+        });
     builder.addCase(getProductDetails.pending, state => {
       state.status = 'pending';
       state.isLoader = true;

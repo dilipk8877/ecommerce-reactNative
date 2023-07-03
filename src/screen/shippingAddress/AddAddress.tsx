@@ -50,7 +50,7 @@ const AddAddress = ({navigation}:any) => {
         </View>
       ) : (
         <View style={styles.container}>
-        <Header headerPageText={preFieldValue === "" ? "Add Address" : "Update Address"} />
+        <Header headerPageText={preFieldValue === "" ? "Add Address" : "Update Address"} navigation={navigation} />
           <ScrollView>
             <View style={styles.maniContainer}>
               <TextInput

@@ -106,7 +106,7 @@ const CartPage: React.FC<{ navigation: any }> = ({ navigation }) => {
         </View>
       ) : (
         <View style={styles.container}>
-          <Header headerPageText="Your Cart" />
+          <Header headerPageText="Your Cart" navigation={navigation} />
           {isLogin ? (
             <>
               {cartItem?.length > 0 ? (
@@ -191,7 +191,7 @@ const CartPage: React.FC<{ navigation: any }> = ({ navigation }) => {
                   <Text style={styles.emptyCartText}>Your Cart is Empty</Text>
                   <Text
                     style={styles.emptyCartLink}
-                    onPress={() => navigation.navigate('CategoryListing')}
+                    onPress={() => navigation.navigate('HomeScreen')}
                   >
                     Continue to shopping
                   </Text>

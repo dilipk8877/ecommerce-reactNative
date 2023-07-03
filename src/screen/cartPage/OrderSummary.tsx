@@ -89,7 +89,7 @@ const OrderSummary = ({navigation}:any) => {
           }),
         );
         dispatch(emptyCart(userId));
-        navigation.navigate('CategoryListing');
+        navigation.navigate('HomeScreen');
        Alert.alert('Payment Successful');
       })
       .catch((error:any) => {
@@ -106,7 +106,7 @@ const OrderSummary = ({navigation}:any) => {
         </View>
       ) : (
         <>
-          <Header headerPageText="Order Summary" />
+          <Header headerPageText="Order Summary" navigation={navigation} />
           <ScrollView>
             <View style={styles.shippingDetails}>
               <View style={styles.shippingHeader}>

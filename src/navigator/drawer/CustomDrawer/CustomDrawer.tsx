@@ -13,20 +13,14 @@ import {
   ToastAndroid,
   View,
 } from 'react-native';
-import Entypo from 'react-native-vector-icons/Entypo';
 import { useSelector } from 'react-redux';
-const CustomDrawer = props => {
-  // const {isLogin} = useSelector((state)=>state.isLogin)
-  const navigation = useNavigation();
-  const handleLogin = () => {
-    navigation.navigate('LoginPage');
-  };
-
-  const [user, setUser] = useState();
+const CustomDrawer = (props:any) => {
+  
+  const [user, setUser] = useState({});
   const getToken = async () => {
     const token = await AsyncStorage.getItem('token');
     if (token) {
-      const decodedToken = jwtDecode(token);
+      const decodedToken:{decodedToken:{}} = jwtDecode(token);
       setUser(decodedToken);
     }
   };
@@ -40,21 +34,6 @@ const CustomDrawer = props => {
       <DrawerContentScrollView {...props}>
         <DrawerItemList {...props} />
       </DrawerContentScrollView>
-      {/* <View style={styles.signoutContainer}>
-        {user !== undefined ? (
-          <Pressable onPress={handleSignout}>
-            <Text style={styles.signoutText}>
-              <Entypo name="log-out" size={20} /> Sign out
-            </Text>
-          </Pressable>
-        ) : (
-          <Pressable onPress={handleLogin}>
-            <Text style={styles.signoutText}>
-              <Entypo name="login" size={20} /> Login
-            </Text>
-          </Pressable>
-        )}
-      </View> */}
     </View>
   );
 };
